@@ -1,9 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AgencyGuard from AristaLabs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
 
+        h1 {
+            color: #333;
+        }
+
+        .bold-text {
+            font-weight: bold;
+        }
+
+        .more-content {
+            display: none;
+        }
+
+        .see-more {
+            color: #007BFF;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .see-more:hover {
+            color: #0056b3;
+        }
+    </style>
+    <script>
+        function toggleMoreContent(id) {
+            var moreContent = document.getElementById(id);
+            if (moreContent.style.display === "none") {
+                moreContent.style.display = "block";
+            } else {
+                moreContent.style.display = "none";
+            }
+        }
+    </script>
+</head>
 <body>
-    <h1>Hello World</h1>
-    <p>I'm hosted with GitHub Pages.</p>
-</body>
 
+    <h1>AgencyGuard from AristaLabs</h1>
+    
+    <h2>What is AgencyGuard?</h2>
+    <p class="bold-text">
+        AgencyGuard is a user or organization specific AI agent that reads consent disclosures (e.g. Terms of Use) and helps determine if they satisfy a policy set by you or your organization. AgencyGuard results in an accept, decline, or if possible, it will select configuration options that will result in an accept decision. Currently, AgencyGuard can reason about decisions regarding consent to use of AI services.
+    </p>
+    
+    <span class="see-more" onclick="toggleMoreContent('more1')">See more</span>
+    <div id="more1" class="more-content">
+        <p>
+            AgencyGuard is a personal AI agent that helps its user decide if they should provide consent to interaction with AI services, AI-enabled applications, and AI generated content; from here out collectively referred to as ‘AI services’.[1].
+        </p>
+        <p>
+            Currently consent is either implied by the user voluntarily interfacing with the service (e.g. ‘scroll is consent’) or uninformed where a user might check a box or click a button “agreeing” to terms they likely have not read and almost certainly are incapable of understanding. While uninformed consent may be explicit, it does nothing to demonstrate the user understands what they’re consenting to.
+        </p>
+        <p>
+            AgencyGuard is designed to help users arrive at informed consent. Achieving informed consent consists in establishing two tests have been met: the AI service provider has made all relevant disclosures and the user is sufficiently competent to interpret those disclosures and reason about what they entail relative to their self interest. Note that while these tests can be met, the user must actually apply their competence and place the mental effort necessary to read the disclosures and reason about their decision.
+        </p>
+        <p>
+            AgencyGuard itself utilizes AI to automate the collection and organization of disclosures and provides assistance in reasoning about their contents, acting as a cognitive aid to augment users’ competence. AgencyGuard is customizable for each user’s competence and self interest, empowering users to choose if and when they align themselves with AI services.
+        </p>
+        <p>
+            [1. AI content includes generated text, images, sound, or any communicable signal or encoding of data or information in any mode or format that results from the data processing of an AI algorithm or outputs from an AI model.]
+        </p>
+    </div>
+
+    <h2>How can you use AgencyGuard?</h2>
+    <p class="bold-text">
+        AgencyGuard persists in your browser as a plugin, on your device as an app, or on your network/private cloud boundary as middleware, and detects disclosures when an AI service provider makes them or if they match an open source list kept by AristaLabs.
+    </p>
+    
+    <span class="see-more" onclick="toggleMoreContent('more2')">See more</span>
+    <div id="more2" class="more-content">
+        <p>
+            AgencyGuard can simply log the event, alert the user, trigger the AgencyGuard cognitive architecture to deliberate consent decisions against your personal or organization’s policy, offer the user a chatbot to open a dialogue about events, disclosures, its internal reasoning about consent, or policies; or any of the above. When AgencyGuard begins deliberating a consent decision, it can take into consideration data from realtime AI provider disclosures, the AristaLabs’ disclosures database, or other private data uploaded by the user (e.g., service contract between the user and the provider).
+        </p>
+    </div>
+
+    <h2>How does AgencyGuard work?</h2>
+    <p class="bold-text">
+        AristaLabs hosts a database of all relevant documents AI service providers have disclosed. AgencyGuard uses this data to make inferences about consenting to AI services against user or organizational policies. AgencyGuard provides the user with a range of automation levels, from a fully automated consent process to a ‘user in the loop’ workflow where the user has to review any accept/decline consent or configuration setting recommendation, to simple alerts that a service is disclosing the use of AI. Any automated or user confirmed actions can always be revoked by automated monitoring or user override. AgencyGuard has a natural language interface for the user to ask questions about the disclosures, its reasoning process, and policies.
+    </p>
+
+    <span class="see-more" onclick="toggleMoreContent('more3')">See more</span>
+    <div id="more3" class="more-content">
+        <p>
+            AristaLabs collects AI provider disclosures such as model cards, terms of use, audit and red team results, available configuration settings, opt in/out options, and any other relevant documentation and stores in AI-friendly formats. This database is kept current by an ongoing discovery process.
+        </p>
+        <p>
+            The data serves as the initial “long term memory” of a hybrid AI cognitive architecture where the disclosures are translated by AI into a formal language allowing another AI component to infer if the disclosures violate the constraints in a user-defined policy.
+        </p>
+        <p>
+            This reasoning can lead to a quick binary consent/no consent decision. However, in the case of a “no consent” decision, AgencyGuard uses AI to determine if any available setting options disclosed by the AI provider can be configured to result in a “consent” condition and automatically set that configuration; without user intervention.
+        </p>
+        <p>
+            AgencyGuard monitors its standing consent decisions for reconsideration as new disclosures are discovered; potentially reversing previous decisions. Users can be alerted that a previously blocked service is now consistent with their policy or automatically grant consent at a future interaction. Conversely, if, for example, a Terms of Use document is updated by a vendor resulting in it no longer satisfying the user’s or organization’s policy, an alert can be sent or consent can automatically be revoked. Users can also revoke consent through a manual override. Similarly, a user can choose to expand their consent through an override, for example, requesting an override of a vendor guardrail or AI safety feature by consenting to a transfer of liability from the vendor to the user.
+        </p>
+        <p>
+            AgencyGuard always avails an AI-driven chatbot interface where a user can interact with their assistant in natural language. Questions regarding any data in the database of disclosures and relevant documentation, reasoning arguments produced during consent deliberations, and policy settings are all made available to the chatbot.
+        </p>
+        <p>
+            Ultimately, what AgencyGuard does is benefit all parties to AI service use by removing market friction, advancing the adoption of AI while guarding the consumer’s rights.
+        </p>
+    </div>
+
+</body>
 </html>
