@@ -1,0 +1,30 @@
+{
+  "dataUsage": {
+    "allowPromptUsage": false,
+    "allowResponseUsage": false,
+    "allowAnonymizedUsage": false
+  },
+  "privacySettings": {
+    "allowPIICollection": false,
+    "allowPIIUsageInTraining": false,
+    "dataRetentionPeriod": 30
+  },
+  "contentFiltering": {
+    "enableInputFiltering": false,
+    "enableOutputFiltering": false,
+    "contentSensitivityLevel": "low"
+  },
+  "interactionPreferences": {
+    "preferredLanguage": "English",
+    "responseLength": "detailed",
+    "tonePref": "professional"
+  },
+  "aiModelPreferences": {
+    "preferredModel": "adf",
+    "allowExperimentalFeatures": true
+  },
+  "feedbackAndLearning": {
+    "allowPersonalization": true,
+    "participateInSurveys": true
+  }
+}
