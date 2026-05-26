@@ -265,7 +265,8 @@
   }
 
   .hero-sub {
-    margin-top: 28px;
+    margin-top: 0;
+    margin-bottom: 40px;
     font-size: 14px;
     line-height: 1.9;
     color: var(--muted);
@@ -304,15 +305,15 @@
   }
 
   .principle:nth-child(1) {
-    animation-delay: 0.9s;
-  }
-
-  .principle:nth-child(2) {
     animation-delay: 1.1s;
   }
 
-  .principle:nth-child(3) {
+  .principle:nth-child(2) {
     animation-delay: 1.3s;
+  }
+
+  .principle:nth-child(3) {
+    animation-delay: 1.5s;
   }
 
   .principle:last-child {
@@ -516,6 +517,7 @@
   @media (prefers-reduced-motion: reduce) {
     .hero-eyebrow,
     .hero-headline,
+    .hero-sub,
     .principle {
       animation: none;
       opacity: 1;
@@ -546,6 +548,7 @@
     <div class="orb orb-2"></div>
     <div class="hero-eyebrow">Humans are the only truth-bearing sentient entity</div>
     <h1 class="hero-headline">AI can increase <em>human agency.</em></h1>
+    <p class="hero-sub">AI can close the information asymmetry between experts and non‑experts—leveling the playing field where specialized knowledge was once gatekept. It can generate arguments, analyze them, explain them clearly, and help with counterarguments and alternatives—giving more people the tools to reason, contest, and decide for themselves.</p>
 
     <div class="hero-principles">
   <article class="principle">
