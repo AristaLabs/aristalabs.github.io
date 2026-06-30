@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Guiding Principles — ARISTA LABS</title>
+  <title>Product — ARISTA LABS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://db.onlinewebfonts.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
@@ -35,8 +35,6 @@
     color: var(--text);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
       sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
     overflow-x: hidden;
     min-height: 100vh;
     display: flex;
@@ -96,6 +94,10 @@
       5px 5px 4px rgba(0,0,0,0.5);
   }
 
+  .nav-logo span {
+    color: var(--accent-soft);
+  }
+
   .nav-links {
     display: flex;
     align-items: center;
@@ -133,9 +135,10 @@
   /* HERO */
   .hero {
     position: relative;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     padding: 120px 24px 80px;
     z-index: 1;
@@ -234,6 +237,67 @@
     flex-shrink: 0;
   }
 
+  .hero-eyebrow--smeme {
+    text-transform: none;
+    letter-spacing: 0.05em;
+    font-size: clamp(14px, 2.5vw, 21px);
+    padding: 14px 26px;
+    gap: 12px;
+    margin-bottom: 28px;
+    border-color: rgba(34, 211, 238, 0.5);
+    background: radial-gradient(
+      ellipse 120% 180% at 50% -20%,
+      rgba(34, 211, 238, 0.22),
+      rgba(79, 70, 229, 0.08) 42%,
+      rgba(15, 23, 42, 0.94) 72%
+    );
+    box-shadow:
+      0 0 28px rgba(34, 211, 238, 0.55),
+      0 0 56px rgba(34, 211, 238, 0.38),
+      0 0 96px rgba(79, 70, 229, 0.32),
+      0 0 140px rgba(34, 211, 238, 0.22),
+      0 0 180px rgba(79, 70, 229, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(15, 23, 42, 0.6);
+  }
+
+  .hero-eyebrow--smeme::before {
+    width: 10px;
+    height: 10px;
+    box-shadow:
+      0 0 16px rgba(34, 211, 238, 1),
+      0 0 32px rgba(34, 211, 238, 0.65);
+  }
+
+  .hero-smeme-badge {
+    font-family: 'SpaceX PERSONAL USE', sans-serif;
+    font-weight: 400;
+    font-size: clamp(15px, 2.3vw, 23px);
+    letter-spacing: 0.12em;
+    text-transform: none;
+    color: var(--muted);
+    text-decoration: none;
+    -webkit-text-stroke: 0.35px currentColor;
+    text-shadow:
+      0 0 10px rgba(34, 211, 238, 0.8),
+      0 0 20px rgba(34, 211, 238, 0.65),
+      0 0 40px rgba(34, 211, 238, 0.5),
+      1px 1px 0 rgba(0,0,0,0.4),
+      2px 2px 0 rgba(0,0,0,0.3),
+      3px 3px 0 rgba(0,0,0,0.25),
+      4px 4px 0 rgba(0,0,0,0.2),
+      5px 5px 4px rgba(0,0,0,0.5);
+    transition: color 0.2s ease;
+  }
+
+  .hero-smeme-badge span {
+    color: var(--accent-soft);
+  }
+
+  .hero-smeme-badge:hover {
+    color: var(--text);
+  }
+
   .hero-headline {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display",
       sans-serif;
@@ -243,16 +307,8 @@
     letter-spacing: -0.04em;
     max-width: 780px;
     text-align: center;
-    margin-bottom: 32px;
     opacity: 0;
     animation: fadeUp 1.3s 0.6s forwards;
-    z-index: 3;
-  }
-
-  .hero-principles {
-    position: relative;
-    width: 100%;
-    max-width: 780px;
     z-index: 3;
   }
 
@@ -265,8 +321,7 @@
   }
 
   .hero-sub {
-    margin-top: 0;
-    margin-bottom: 40px;
+    margin-top: 28px;
     font-size: 14px;
     line-height: 1.9;
     color: var(--muted);
@@ -287,129 +342,17 @@
     z-index: 3;
   }
 
-  .principle {
-    margin-bottom: 20px;
-    padding: 18px 22px;
-    border-radius: 24px;
-    background: radial-gradient(
-      circle at top left,
-      rgba(15, 23, 42, 0.98),
-      rgba(15, 23, 42, 0.86)
-    );
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-soft);
-    opacity: 0;
-    animation: fadeUp 1.3s forwards;
-    position: relative;
-    z-index: 3;
-  }
-
-  .principle:nth-child(1) {
-    animation-delay: 1.1s;
-  }
-
-  .principle:nth-child(2) {
-    animation-delay: 1.3s;
-  }
-
-  .principle:nth-child(3) {
-    animation-delay: 1.5s;
-  }
-
-  .principle:last-child {
-    margin-bottom: 0;
-  }
-
-  .principle-title {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    color: var(--text);
-  }
-
-  .principle-toggle {
-    width: 100%;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 0;
-    margin: 0;
-    border: none;
-    background: none;
-    color: inherit;
-    font: inherit;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-align: left;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: color 0.2s ease;
-  }
-
-  .principle-toggle:hover {
-    color: var(--accent-soft);
-  }
-
-  .principle-toggle:focus-visible {
-    outline: 2px solid var(--accent-soft);
-    outline-offset: 4px;
-  }
-
-  .principle-toggle-label {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .principle-toggle-icon {
-    flex-shrink: 0;
-    margin-top: 3px;
-    color: var(--accent-soft);
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .principle.is-open .principle-toggle-icon {
-    transform: rotate(180deg);
-  }
-
-  .principle-panel {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .principle.is-open .principle-panel {
-    grid-template-rows: 1fr;
-  }
-
-  .principle-panel-inner {
-    overflow: hidden;
-    min-height: 0;
-  }
-
-  .principle-desc {
-    font-size: 14px;
-    line-height: 1.8;
+  .hero-footnote {
+    margin-top: 16px;
+    font-size: 12px;
+    line-height: 1.7;
     color: var(--muted);
-    padding: 14px 0 0;
-    margin: 0;
+    max-width: 720px;
+    text-align: center;
+    margin-inline: auto;
     opacity: 0;
-    transform: translateY(-10px);
-    transition:
-      opacity 0.45s ease 0.05s,
-      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.04s;
-  }
-
-  .principle.is-open .principle-desc {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .principle-desc::before {
-    content: "→ ";
-    color: var(--accent-soft);
-    font-weight: 400;
+    animation: fadeUp 1.3s 1.1s forwards;
+    z-index: 3;
   }
 
   /* FOOTER */
@@ -445,6 +388,10 @@
       4px 4px 2px rgba(0,0,0,0.5);
   }
 
+  .footer-logo span {
+    color: var(--accent-soft);
+  }
+
   .footer-copy {
     font-size: 11px;
     letter-spacing: 0.08em;
@@ -465,6 +412,7 @@
     border-color: var(--accent-soft);
   }
 
+  /* Animations / utilities */
   @keyframes fadeUp {
     from {
       opacity: 0;
@@ -474,6 +422,17 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   @media (max-width: 768px) {
@@ -490,20 +449,11 @@
       padding: 5px 10px;
     }
 
-    .hero-sub {
-      padding: 16px 18px;
-      border-radius: 20px;
-    }
-
     .hero {
       padding: 112px 16px 56px;
     }
 
-    .hero-headline {
-      margin-bottom: 24px;
-    }
-
-    .principle {
+    .hero-sub {
       padding: 16px 18px;
       border-radius: 20px;
     }
@@ -511,22 +461,6 @@
     footer {
       padding: 20px 16px 28px;
       text-align: center;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-eyebrow,
-    .hero-headline,
-    .hero-sub,
-    .principle {
-      animation: none;
-      opacity: 1;
-    }
-
-    .principle-panel,
-    .principle-desc,
-    .principle-toggle-icon {
-      transition-duration: 0.01ms !important;
     }
   }
 </style>
@@ -537,8 +471,8 @@
     <a href="index.html" class="nav-logo">ARISTA LABS</a>
     <div class="nav-links">
       <a href="index.html" class="nav-link">Mission</a>
-      <a href="guiding-principles.html" class="nav-link active">Guiding Principles</a>
-      <a href="product.html" class="nav-link">Product</a>
+      <a href="guiding-principles.html" class="nav-link">Guiding Principles</a>
+      <a href="product.html" class="nav-link active">Product</a>
       <a href="contact.html" class="nav-link">Contact</a>
     </div>
   </nav>
@@ -546,59 +480,15 @@
   <section class="hero">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    <div class="hero-eyebrow">Humans are the only truth-bearing sentient entity</div>
-    <h1 class="hero-headline">AI can increase <em>human agency.</em></h1>
-    <p class="hero-sub">AI can close the information asymmetry between experts and non‑experts—leveling the playing field where specialized knowledge was once gatekept. It can generate arguments, analyze them, explain them clearly, and help with counterarguments and alternatives—giving more people the tools to reason, contest, and decide for themselves.</p>
-
-    <div class="hero-principles">
-  <article class="principle">
-    <h2 class="principle-title">
-      <button type="button" class="principle-toggle" id="principle-trigger-1" aria-expanded="false" aria-controls="principle-panel-1">
-        <span class="principle-toggle-label">Individual Agency — persons are born with sovereignty of mind from which all rights follow</span>
-        <span class="principle-toggle-icon" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-      </button>
-    </h2>
-    <div class="principle-panel" id="principle-panel-1" role="region" aria-labelledby="principle-trigger-1" aria-hidden="true">
-      <div class="principle-panel-inner">
-        <p class="principle-desc">Individuals possess a natural and inalienable freedom of conscience and judgment, and are treated as the primary knowers and choosers in social life; they are entitled to form, revise, and act on their own beliefs and purposes within the limits of others' equal rights, and cannot be reduced to mere instruments of a collective plan or technical system.</p>
-      </div>
-    </div>
-  </article>
-
-  <article class="principle">
-    <h2 class="principle-title">
-      <button type="button" class="principle-toggle" id="principle-trigger-2" aria-expanded="false" aria-controls="principle-panel-2">
-        <span class="principle-toggle-label">Epistemic Autonomy — individuals can understand and contest the reasoning that affects them</span>
-        <span class="principle-toggle-icon" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-      </button>
-    </h2>
-    <div class="principle-panel" id="principle-panel-2" role="region" aria-labelledby="principle-trigger-2" aria-hidden="true">
-      <div class="principle-panel-inner">
-        <p class="principle-desc">Epistemic autonomy includes the right to make up your own mind and to have sophisticated efforts to influence your reasoning disclosed. People are owed intelligible justifications for decisions that shape their lives, and the systems—including AI systems—that inform or constrain them must remain open to inspection, challenge, and revision through public criticism, ensuring that no "oracular" source of authority is placed beyond reasoned contest or democratic control.</p>
-      </div>
-    </div>
-  </article>
-
-  <article class="principle">
-    <h2 class="principle-title">
-      <button type="button" class="principle-toggle" id="principle-trigger-3" aria-expanded="false" aria-controls="principle-panel-3">
-        <span class="principle-toggle-label">Reasoned Consent — legitimate authority depends on informed and competent judgment</span>
-        <span class="principle-toggle-icon" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-      </button>
-    </h2>
-    <div class="principle-panel" id="principle-panel-3" role="region" aria-labelledby="principle-trigger-3" aria-hidden="true">
-      <div class="principle-panel-inner">
-        <p class="principle-desc">Human beings are rational agents capable of self-governance, and legitimate authority requires more than passive agreement or procedural acceptance. Consent is meaningful only when individuals are sufficiently informed and intellectually capable of understanding the decisions, systems, and consequences that affect them. People must have access to the relevant information, assumptions, and rules necessary to evaluate outcomes, and they must be free to examine, question, and reason about them without coercion or deception.</p>
-      </div>
-    </div>
-  </article>
-    </div>
+    <div class="hero-eyebrow hero-eyebrow--smeme"><span>Looking for <a href="https://smeme.ai" class="hero-smeme-badge" target="_blank" rel="noopener noreferrer">SME<span>me</span></a>?</span></div>
+ <!--    <h1 class="hero-headline">Automate<br /><em>Your Expertise</em> at Scale.</h1>
+    <p class="hero-sub">You've automated your busywork. Now automate your expertise.
+Our AI Expertise Automation Platform transforms your expert knowledge into machine-readable intelligence that AI agents can interact with — without exposing your proprietary know-how to clients or AI companies.
+Plug it into your existing workflow as the final step in your service delivery pipeline — the step that until now couldn't be automated. Work products arrive having already passed through your own expert reasoning, applied to the full context. Not a hallucinated summary for you to interpret. Not probalisitc guesswork for you to check. Your conclusions, generated the way you would have generated them.
+You stay in control. You can review, override, or approve. 
+Keep it in-house or monetize it at global scale — the choice is yours. Your expertise belongs to you. Control access, edit, version, and delete them from our platform entirely on your own terms.
+Your expertise — proprietary, secure, and scalable.</p>
+    <p class="hero-footnote"><sup>*</sup> If need help automating your busywork, we can help. We can provide AI automation consulting from intake to billing.</p> -->
   </section>
 
   <footer id="footer">
@@ -606,17 +496,3 @@
     <a href="mailto:contact@aristalabs.com" class="footer-email">contact@aristalabs.com</a>
     <span class="footer-copy">© 2026 Arista Labs, LLC. All rights reserved.</span>
   </footer>
-  <script>
-    document.querySelectorAll(".principle-toggle").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var article = btn.closest(".principle");
-        if (!article) return;
-        var panel = article.querySelector(".principle-panel");
-        var open = article.classList.toggle("is-open");
-        btn.setAttribute("aria-expanded", open ? "true" : "false");
-        if (panel) panel.setAttribute("aria-hidden", open ? "false" : "true");
-      });
-    });
-  </script>
-</body>
-</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARISTA LABS — Digital Agency</title>
+  <title>Mission — ARISTA LABS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://db.onlinewebfonts.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
@@ -237,80 +237,6 @@
     flex-shrink: 0;
   }
 
-  .hero-eyebrow--smeme {
-    text-transform: none;
-    letter-spacing: 0.05em;
-    font-size: clamp(14px, 2.5vw, 21px);
-    padding: 14px 26px;
-    gap: 12px;
-    margin-bottom: 28px;
-    border-color: rgba(34, 211, 238, 0.5);
-    background: radial-gradient(
-      ellipse 120% 180% at 50% -20%,
-      rgba(34, 211, 238, 0.22),
-      rgba(79, 70, 229, 0.08) 42%,
-      rgba(15, 23, 42, 0.94) 72%
-    );
-    box-shadow:
-      0 0 28px rgba(34, 211, 238, 0.55),
-      0 0 56px rgba(34, 211, 238, 0.38),
-      0 0 96px rgba(79, 70, 229, 0.32),
-      0 0 140px rgba(34, 211, 238, 0.22),
-      0 0 180px rgba(79, 70, 229, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 -1px 0 rgba(15, 23, 42, 0.6);
-  }
-
-  .hero-eyebrow--smeme::before {
-    width: 10px;
-    height: 10px;
-    box-shadow:
-      0 0 16px rgba(34, 211, 238, 1),
-      0 0 32px rgba(34, 211, 238, 0.65);
-  }
-
-  .hero-smeme-badge {
-    font-family: 'SpaceX PERSONAL USE', sans-serif;
-    font-weight: 400;
-    font-size: clamp(15px, 2.3vw, 23px);
-    letter-spacing: 0.12em;
-    text-transform: none;
-    color: var(--muted);
-    text-decoration: none;
-    -webkit-text-stroke: 0.35px currentColor;
-    text-shadow:
-      0 0 10px rgba(34, 211, 238, 0.8),
-      0 0 20px rgba(34, 211, 238, 0.65),
-      0 0 40px rgba(34, 211, 238, 0.5),
-      1px 1px 0 rgba(0,0,0,0.4),
-      2px 2px 0 rgba(0,0,0,0.3),
-      3px 3px 0 rgba(0,0,0,0.25),
-      4px 4px 0 rgba(0,0,0,0.2),
-      5px 5px 4px rgba(0,0,0,0.5);
-    transition: color 0.2s ease;
-  }
-
-  .hero-smeme-badge span {
-    color: var(--accent-soft);
-  }
-
-  .hero-smeme-badge:hover {
-    color: var(--text);
-  }
-
-  .hero-smeme-here {
-    color: var(--accent-soft);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    padding-bottom: 1px;
-    transition: color 0.18s ease, border-color 0.18s ease;
-  }
-
-  .hero-smeme-here:hover {
-    color: var(--text);
-    border-color: var(--accent-soft);
-  }
-
   .hero-headline {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display",
       sans-serif;
@@ -453,6 +379,15 @@
       padding: 12px 16px;
     }
 
+    .nav-links {
+      gap: 6px;
+    }
+
+    .nav-link {
+      font-size: 10px;
+      padding: 5px 10px;
+    }
+
     .hero {
       padding: 112px 16px 56px;
     }
@@ -474,9 +409,9 @@
   <nav>
     <a href="index.html" class="nav-logo">ARISTA LABS</a>
     <div class="nav-links">
-      <a href="mission.html" class="nav-link">Mission</a>
+      <a href="index.html" class="nav-link active">Mission</a>
       <a href="guiding-principles.html" class="nav-link">Guiding Principles</a>
-      <a href="index.html" class="nav-link active">Product</a>
+      <a href="product.html" class="nav-link">Product</a>
       <a href="contact.html" class="nav-link">Contact</a>
     </div>
   </nav>
@@ -484,15 +419,9 @@
   <section class="hero">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    <div class="hero-eyebrow hero-eyebrow--smeme"><span>Looking for <a href="https://smeme.ai" class="hero-smeme-badge" target="_blank" rel="noopener noreferrer">SMEme</a>? Click <a href="https://smeme.ai" class="hero-smeme-here" target="_blank" rel="noopener noreferrer">here</a></span></div>
- <!--    <h1 class="hero-headline">Automate<br /><em>Your Expertise</em> at Scale.</h1>
-    <p class="hero-sub">You've automated your busywork. Now automate your expertise.
-Our AI Expertise Automation Platform transforms your expert knowledge into machine-readable intelligence that AI agents can interact with — without exposing your proprietary know-how to clients or AI companies.
-Plug it into your existing workflow as the final step in your service delivery pipeline — the step that until now couldn't be automated. Work products arrive having already passed through your own expert reasoning, applied to the full context. Not a hallucinated summary for you to interpret. Not probalisitc guesswork for you to check. Your conclusions, generated the way you would have generated them.
-You stay in control. You can review, override, or approve. 
-Keep it in-house or monetize it at global scale — the choice is yours. Your expertise belongs to you. Control access, edit, version, and delete them from our platform entirely on your own terms.
-Your expertise — proprietary, secure, and scalable.</p>
-    <p class="hero-footnote"><sup>*</sup> If need help automating your busywork, we can help. We can provide AI automation consulting from intake to billing.</p> -->
+    <div class="hero-eyebrow">Preserve Human Agency in the Age of AI</div>
+    <h1 class="hero-headline">AI Automation is not a substitute for <em>human agency.</em></h1>
+    <p class="hero-sub">Our mission is to preserve human agency in the age of AI assistants and the automation of intellectual work. We believe expert judgment is the last frontier of automation, and that it must remain under human control. We work to make expert knowledge machine‑readable and actionable so individuals and institutions can scale high‑stakes decisions without sacrificing quality, accountability, or self‑governance.</p>
   </section>
 
   <footer id="footer">
@@ -500,3 +429,5 @@ Your expertise — proprietary, secure, and scalable.</p>
     <a href="mailto:contact@aristalabs.com" class="footer-email">contact@aristalabs.com</a>
     <span class="footer-copy">© 2026 Arista Labs, LLC. All rights reserved.</span>
   </footer>
+</body>
+</html>
