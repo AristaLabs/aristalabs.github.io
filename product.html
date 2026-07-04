@@ -355,6 +355,94 @@
     z-index: 3;
   }
 
+  /* Slash kicker — shared device with SMEme, set in JetBrains Mono */
+  .hero-kicker {
+    position: relative;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 22px;
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeUp 1.3s 0.4s forwards;
+    z-index: 3;
+  }
+
+  .hero-kicker-slash {
+    color: var(--accent-soft);
+    font-weight: 700;
+    margin-right: 3px;
+  }
+
+  .hero-sub-link {
+    color: var(--accent-soft);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.18s ease;
+  }
+
+  .hero-sub-link:hover {
+    border-color: var(--accent-soft);
+  }
+
+  .hero-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 32px;
+    opacity: 0;
+    animation: fadeUp 1.3s 1.05s forwards;
+    z-index: 3;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 26px;
+    border-radius: 999px;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: color 0.2s ease, border-color 0.2s ease,
+      box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .hero-cta--primary {
+    color: #020617;
+    font-weight: 700;
+    border: 1px solid rgba(34, 211, 238, 0.8);
+    background: linear-gradient(120deg, #67e8f9, #22d3ee);
+    box-shadow:
+      0 0 28px rgba(34, 211, 238, 0.55),
+      0 0 60px rgba(34, 211, 238, 0.3);
+  }
+
+  .hero-cta--primary:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 32px rgba(34, 211, 238, 0.75),
+      0 0 72px rgba(79, 70, 229, 0.4);
+  }
+
+  .hero-cta--secondary {
+    color: var(--muted);
+    border: 1px solid var(--border);
+    background: radial-gradient(
+      circle at top,
+      rgba(15, 23, 42, 0.96),
+      rgba(15, 23, 42, 0.8)
+    );
+  }
+
+  .hero-cta--secondary:hover {
+    color: var(--accent-soft);
+    border-color: var(--accent-soft);
+  }
+
   /* FOOTER */
   footer {
     position: relative;
@@ -481,15 +569,25 @@
   <section class="hero">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    <div class="hero-eyebrow hero-eyebrow--smeme"><span>Looking for <a href="https://smeme.ai" class="hero-smeme-badge" target="_blank" rel="noopener noreferrer">SME<span>me</span></a>?</span></div>
- <!--    <h1 class="hero-headline">Automate<br /><em>Your Expertise</em> at Scale.</h1>
-    <p class="hero-sub">You've automated your busywork. Now automate your expertise.
-Our AI Expertise Automation Platform transforms your expert knowledge into machine-readable intelligence that AI agents can interact with — without exposing your proprietary know-how to clients or AI companies.
-Plug it into your existing workflow as the final step in your service delivery pipeline — the step that until now couldn't be automated. Work products arrive having already passed through your own expert reasoning, applied to the full context. Not a hallucinated summary for you to interpret. Not probalisitc guesswork for you to check. Your conclusions, generated the way you would have generated them.
-You stay in control. You can review, override, or approve. 
-Keep it in-house or monetize it at global scale — the choice is yours. Your expertise belongs to you. Control access, edit, version, and delete them from our platform entirely on your own terms.
-Your expertise — proprietary, secure, and scalable.</p>
-    <p class="hero-footnote"><sup>*</sup> If need help automating your busywork, we can help. We can provide AI automation consulting from intake to billing.</p> -->
+
+    <p class="hero-kicker"><span class="hero-kicker-slash">/</span>neuro-symbolic AI at scale</p>
+
+    <h1 class="hero-headline">We build AI that keeps expertise <em>in expert hands.</em></h1>
+
+    <p class="hero-sub">
+      Arista Labs is a research and product studio working to preserve expert agency as AI
+      automates intellectual work.
+      <a href="https://smeme.ai" class="hero-sub-link" target="_blank" rel="noopener noreferrer">SMEme</a>,
+      our flagship, lets experts encode their judgment as private, proprietary logic that never
+      leaves the platform &mdash; then runs it deterministically at execution, returning a
+      trusted, attributable result instead of a plausible guess. Your expertise stays yours: we
+      never share, sell, or expose your workflows to third parties.
+    </p>
+
+    <div class="hero-cta-row">
+      <a href="https://smeme.ai" class="hero-cta hero-cta--primary" target="_blank" rel="noopener noreferrer">Explore SMEme <span aria-hidden="true">&rarr;</span></a>
+      <a href="guiding-principles.html" class="hero-cta hero-cta--secondary">Our guiding principles</a>
+    </div>
   </section>
 
   <footer id="footer">
