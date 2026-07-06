@@ -485,6 +485,18 @@
     letter-spacing: 0.08em;
   }
 
+  .footer-veteran {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
   .footer-email {
     font-size: 11px;
     letter-spacing: 0.14em;
@@ -579,7 +591,7 @@
       automates intellectual work.
       <a href="https://smeme.ai" class="hero-sub-link" target="_blank" rel="noopener noreferrer">SMEme</a>,
       our flagship, lets experts encode their judgment as private, proprietary logic that never
-      leaves the platform &mdash; then runs it deterministically at execution, returning a
+      leaves the platform at evaluation time &mdash; then runs it deterministically at execution, returning a
       trusted, attributable result instead of a plausible guess. Your expertise stays yours: we
       never share, sell, or expose your workflows to third parties.
     </p>
@@ -591,6 +603,10 @@
   </section>
 
   <footer id="footer">
+    <p class="footer-veteran">
+      <span>Veteran-owned and operated</span>
+      <span role="img" aria-label="American flag">&#127482;&#127480;</span>
+    </p>
     <div class="footer-logo">ARISTA LABS</div>
     <a href="mailto:contact@aristalabs.com" class="footer-email">contact@aristalabs.com</a>
     <span class="footer-copy">© 2026 Arista Labs, LLC. All rights reserved.</span>
