@@ -142,6 +142,54 @@
     border-color: var(--accent-soft);
   }
 
+  .nav-toggle {
+    display: none;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 10px;
+    background: radial-gradient(
+      circle at top,
+      rgba(15, 23, 42, 0.96),
+      rgba(15, 23, 42, 0.8)
+    );
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .nav-toggle span {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: var(--muted);
+    transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+  }
+
+  nav.nav-open .nav-toggle {
+    border-color: var(--accent-soft);
+  }
+
+  nav.nav-open .nav-toggle span {
+    background: var(--accent-soft);
+  }
+
+  nav.nav-open .nav-toggle span:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+
+  nav.nav-open .nav-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+
+  nav.nav-open .nav-toggle span:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
   main {
     flex: 1;
     position: relative;
@@ -349,15 +397,31 @@
   @media (max-width: 768px) {
     nav {
       padding: 12px 16px;
+      flex-wrap: wrap;
+      row-gap: 4px;
+    }
+
+    .nav-toggle {
+      display: flex;
     }
 
     .nav-links {
-      gap: 6px;
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 8px 0 4px;
+    }
+
+    nav.nav-open .nav-links {
+      display: flex;
     }
 
     .nav-link {
       font-size: 10px;
-      padding: 5px 10px;
+      padding: 10px 12px;
+      text-align: center;
     }
 
     main {
@@ -423,7 +487,10 @@
 
   <nav>
     <a href="index.html" class="nav-logo">ARISTA LABS</a>
-    <div class="nav-links">
+    <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="site-nav">
       <a href="index.html" class="nav-link">Mission</a>
       <a href="guiding-principles.html" class="nav-link">Guiding Principles</a>
       <a href="product.html" class="nav-link">Product</a>
@@ -473,5 +540,17 @@
     <span class="footer-copy">© 2026 Arista Labs, LLC. All rights reserved.</span>
   </footer>
 
+  <script>
+    (function () {
+      var nav = document.querySelector("nav");
+      var toggle = document.querySelector(".nav-toggle");
+      if (!nav || !toggle) return;
+      toggle.addEventListener("click", function () {
+        var open = nav.classList.toggle("nav-open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      });
+    })();
+  </script>
 </body>
 </html>
