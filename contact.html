@@ -203,6 +203,13 @@
     z-index: 1;
   }
 
+  .contact-channels {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
   .contact-email {
     font-size: clamp(18px, 4.5vw, 28px);
     letter-spacing: 0.14em;
@@ -267,7 +274,13 @@
   </nav>
 
   <main>
-    <a href="mailto:contact@aristalabs.ai" class="contact-email plausible-event-name=Contact+Click">contact@aristalabs.ai</a>
+    <div class="contact-channels">
+      <a href="mailto:contact@aristalabs.ai" class="contact-email plausible-event-name=Contact+Click">contact@aristalabs.ai</a>
+      <a href="https://x.com/aristalabs"
+         class="contact-email"
+         target="_blank"
+         rel="noopener noreferrer">@AristaLabs</a>
+    </div>
   </main>
 
   <script>
