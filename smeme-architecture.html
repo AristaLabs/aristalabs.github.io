@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SMEme is a neurosymbolic architecture for user-attributable decision analysis: experts authorize a decision tree, Deploy compiles an immutable IR, and a solver computes consequences over T(IR) ∧ E ∧ A." />
+  <meta property="og:site_name" content="Arista Labs" />
+  <meta property="og:title" content="SMEme: A Practical Neurosymbolic AI System for User-Attributable Decision Analysis" />
+  <meta property="og:description" content="Experts authorize a decision tree. Deploy compiles an immutable IR. A solver, not the model, computes what follows." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://aristalabs.ai/smeme-architecture.html" />
+  <meta property="article:published_time" content="2026-09-02" />
+  <link rel="canonical" href="https://aristalabs.ai/smeme-architecture.html" />
+  <meta property="og:image" content="https://aristalabs.ai/assets/og-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Arista Labs — preserve human agency in the age of AI" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://aristalabs.ai/assets/og-card.png" />
+  <script async src="https://plausible.io/js/pa-ny3cas2_OEgjYzkHGT2aN.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+  <title>SMEme Architecture — ARISTA LABS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://db.onlinewebfonts.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://db.onlinewebfonts.com/c/568e1a7e9b2ec90a53ab0cbced3584e7?family=SpaceX+PERSONAL+USE" rel="stylesheet" type="text/css" />
+  <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: radial-gradient(circle at top, #111827 0, #020617 55%, #020617 100%);
+    --bg-solid: #020617;
+    --accent-soft: #22d3ee;
+    --text: #f9fafb;
+    --muted: #9ca3af;
+    --border: rgba(148, 163, 184, 0.22);
+  }
+
+  body {
+    background: var(--bg);
+    background-color: var(--bg-solid);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at top, rgba(56, 189, 248, 0.10), transparent 55%),
+      radial-gradient(circle at bottom, rgba(79, 70, 229, 0.22), transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    max-width: 1120px;
+    margin: 0 auto;
+    background: linear-gradient(to bottom, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.78));
+    backdrop-filter: blur(22px);
+  }
+
+  .nav-logo {
+    font-family: 'SpaceX PERSONAL USE', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    -webkit-text-stroke: 0.35px currentColor;
+    text-shadow:
+      0 0 10px rgba(34, 211, 238, 0.8),
+      0 0 20px rgba(34, 211, 238, 0.65),
+      0 0 40px rgba(34, 211, 238, 0.5),
+      1px 1px 0 rgba(0,0,0,0.4),
+      2px 2px 0 rgba(0,0,0,0.3),
+      3px 3px 0 rgba(0,0,0,0.25),
+      4px 4px 0 rgba(0,0,0,0.2),
+      5px 5px 4px rgba(0,0,0,0.5);
+  }
+
+  .nav-links { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+  .nav-link {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.8));
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .nav-link:hover, .nav-link.active { color: var(--accent-soft); border-color: var(--accent-soft); }
+
+  .nav-toggle {
+    display: none;
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    padding: 0;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 10px;
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.8));
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .nav-toggle span { display: block; width: 16px; height: 1.5px; background: var(--muted); }
+  nav.nav-open .nav-toggle { border-color: var(--accent-soft); }
+  nav.nav-open .nav-toggle span { background: var(--accent-soft); }
+  nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+  nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .nav-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; margin-left: 4px; }
+  .social-links { display: inline-flex; align-items: center; gap: 2px; }
+  .social-link {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px;
+    color: var(--muted); text-decoration: none; border-radius: 999px;
+  }
+  .social-link:hover { color: var(--accent-soft); background: rgba(34, 211, 238, 0.08); }
+  .social-link:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+  .social-link svg { display: block; width: 18px; height: 18px; }
+  .social-link-x svg { width: 15px; height: 15px; }
+
+  main {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    padding: 120px 24px 80px;
+  }
+
+  .post {
+    width: min(760px, 100%);
+    margin: 0 auto;
+  }
+
+  .post-kicker {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    margin-bottom: 16px;
+  }
+
+  .post-kicker a { color: inherit; text-decoration: none; }
+  .post-kicker a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .post h1 {
+    font-size: clamp(28px, 4.4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .post-byline {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-body { font-size: 16px; line-height: 1.75; color: #e5e7eb; }
+
+  .post-body h2 {
+    font-size: clamp(20px, 3vw, 26px);
+    letter-spacing: -0.02em;
+    margin: 48px 0 16px;
+    color: var(--text);
+  }
+
+  .post-body h3 {
+    font-size: 17px;
+    font-weight: 650;
+    margin: 32px 0 12px;
+    color: var(--text);
+  }
+
+  .post-body p { margin: 0 0 1.15em; }
+
+  .post-body a { color: var(--accent-soft); text-decoration: none; border-bottom: 1px solid transparent; }
+  .post-body a:hover { border-bottom-color: var(--accent-soft); }
+
+  .post-body code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.86em;
+    color: #a5f3fc;
+    background: rgba(15, 23, 42, 0.65);
+    padding: 0.08em 0.35em;
+    border-radius: 4px;
+  }
+
+  .post-body strong { color: var(--text); font-weight: 650; }
+
+  .post-body ul, .post-body ol { margin: 0 0 1.15em 1.2em; }
+  .post-body li { margin: 0.35em 0; }
+
+  .post-body hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  .post-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 1.4em;
+    font-size: 14px;
+  }
+
+  .post-body th, .post-body td {
+    text-align: left;
+    vertical-align: top;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-body th { color: var(--muted); font-weight: 550; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .post-body .table-wrap { overflow-x: auto; margin: 0 0 1.4em; }
+  .post-body .table-wrap table { margin: 0; }
+
+  .diagram {
+    margin: 28px 0 36px;
+    padding: 16px 8px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: rgba(15, 23, 42, 0.7);
+    overflow-x: auto;
+  }
+
+  .diagram .mermaid { display: flex; justify-content: center; }
+
+  footer {
+    position: relative;
+    z-index: 3;
+    padding: 24px 24px 32px;
+    border-top: 1px solid rgba(15, 23, 42, 0.9);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .footer-logo {
+    font-family: 'SpaceX PERSONAL USE', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    -webkit-text-stroke: 0.3px currentColor;
+    text-shadow:
+      0 0 8px rgba(34, 211, 238, 0.7),
+      0 0 16px rgba(34, 211, 238, 0.55),
+      0 0 28px rgba(34, 211, 238, 0.45),
+      1px 1px 0 rgba(0,0,0,0.4),
+      2px 2px 0 rgba(0,0,0,0.3),
+      3px 3px 0 rgba(0,0,0,0.25),
+      4px 4px 2px rgba(0,0,0,0.5);
+  }
+
+  .footer-copy { font-size: 11px; letter-spacing: 0.08em; }
+  .footer-veteran {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .footer-email {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+  }
+  .footer-email:hover { color: var(--accent-soft); border-color: var(--accent-soft); }
+
+  @media (max-width: 768px) {
+    nav { padding: 12px 16px; flex-wrap: wrap; row-gap: 4px; }
+    .nav-toggle { display: flex; }
+    .nav-actions { margin-left: auto; }
+    .nav-links {
+      display: none; width: 100%; order: 3; margin-left: 0;
+      flex-direction: column; align-items: stretch; gap: 8px; padding: 8px 0 4px;
+    }
+    nav.nav-open .nav-links { display: flex; }
+    .nav-link { font-size: 10px; padding: 10px 12px; text-align: center; }
+    main { padding: 104px 20px 56px; }
+    .post-body { font-size: 15px; }
+  }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">ARISTA LABS</a>
+    <div class="nav-links" id="site-nav">
+      <a href="index.html" class="nav-link">Mission</a>
+      <a href="guiding-principles.html" class="nav-link">Guiding Principles</a>
+      <a href="product.html" class="nav-link">Product</a>
+      <a href="blog.html" class="nav-link active">Blog</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <div class="social-links" aria-label="Arista Labs on the web">
+        <a href="https://github.com/AristaLabs/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on GitHub" title="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+        </a>
+        <a href="https://x.com/aristalabs" class="social-link social-link-x" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on X" title="X">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.227-8.26L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+          </svg>
+        </a>
+      </div>
+      <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <main>
+    <article class="post">
+      <p class="post-kicker"><a href="blog.html">Blog</a> / Architecture</p>
+      <h1>SMEme: A Practical Neurosymbolic AI System for User-Attributable Decision Analysis</h1>
+      <p class="post-byline">Arista Labs · September 2, 2026 · Space Coast, FL</p>
+      <div class="post-body">
+<h2 id="1-introduction-to-smeme">1. Introduction to SMEme</h2>
+<p>Space Coast, FL — SMEme is a neurosymbolic architecture for user-attributable decision analysis. Directly in a chat session, a user supplies the model with the target knowledge-domain context such as policies, white papers, saved prompts, web research, and anything else their LLM harness can consume. With guidance from SMEme MCP tools, the model is instructed to generate a <em>decision tree</em> consisting of natural-language questions with answer options, branching conditions, and possible conclusions. Without leaving chat, the subject-matter expert reviews, edits, and authorizes that tree in ordinary domain language, as text or through multi-turn chat with their agent. The authored tree is persisted as a versioned decision tree graph (<code>DTGraph</code>), and the agent can ask SMEme to validate its graph structure. Once saved, the tree appears on the user's SMEme dashboard. From there the user has authority to create, download, and delete it and can edit the tree manually as JSON, through SMEme's graphical editor, or with their agent's help in chat.</p>
+<p>Only when a user clicks "Deploy" from the SMEme dashboard or editor is the <code>DTGraph</code> deterministically compiled into a frozen <em>intermediate representation</em> (<code>IR</code>). Redeploy after edits to the <code>DTGraph</code> is a new commitment and generates a new <code>IR</code>; prior <code>IR</code> stay in the database for audit of solver results made under them. The expert-authorized object remains the decision tree (<code>DTGraph</code>); the <code>IR</code> is the deterministically compiled machine-facing encoding of that authorized structure, tightly coupled to it. If the user ever deletes a decision tree, the <code>DTGraph</code> and associated <code>IR</code> are deleted with it. This is the first user-attribution gate for the logical structure of permissible automated reasoning that can happen downstream. This also enhances user agency by providing them the opportunity to fully review and consent to the correctness of the decision tree versus opaque LLM "reasoning tokens" or an inaccessible knowledge-engineer translation of the domain knowledge.</p>
+<p>When the user is ready to run a set of facts and/or assumptions against the decision tree, the solver loads the current persisted <code>IR</code> and, with fixed program code—an implementation of SMEme's <strong>Decision-DAG Calculus</strong> (Arista Labs, 2026)—encodes it into the propositional theory <code>T(IR)</code>. That theory is not stored; it is compiled on demand and added to a symbolic constraint solver instance at each request to ensure what the solver reasons over is deterministically compiled from what the user approved by that request.</p>
+<div class="diagram" role="img" aria-label="Architecture diagram"><pre class="mermaid">flowchart LR
+    DT["User-approved decision tree<br/>(DTGraph)"]
+    IR["Intermediate representation<br/>(immutable IR)"]
+    T["Propositional theory<br/>T(IR)"]
+
+    DT -->|"Deploy: compile and persist"| IR
+    IR -->|"Evaluate: encode on demand"| T</pre></div>
+<p>SMEme provides two evaluation modes over the same deployed theory. In <strong>Inquire</strong>, SMEme's backend symbolic constraint solver selects the next reachable unanswered question identifier that can still change the outcome. The orchestration layer uses that identifier to retrieve one blind task. That task carries a question identifier, question text, and allowed answer options drawn from the frozen worksheet catalog. Critically, the overall graph topology is withheld from the task payload so the LLM cannot see other questions, branching conditions, or possible conclusions. That withholding, along with MCP tool guidance not to use cached context or memory to infer those facts, attempts to ensure the LLM cannot be influenced by that context when tasked with answering that single question.</p>
+<p>The user can provide their agent any context the LLM can process to draw answers from, such as local files, charts, pasted data, and whatever the agent can access via other MCP tools like CRM, email, and web drives, and so forth. The user can also ask the agent to present the next question and answer choices for them to answer themselves. Deterministic evidence collection workflows can be run given that the questions and their answer choices for any given decision tree are known in advance. In any case, while in Inquire mode, an answer must be accompanied by a <code>provenance_id</code>. That identifier is opaque to SMEme's logical layer. The surrounding agent or harness can associate it with a human-inspectable source, so the user can check the proposed answer against that source. Provenance records where the proposed answer came from. It does not certify that the source supports the answer.</p>
+<p>The agent submits the answer via SMEme MCP tools. It passes through a structural validation gate and is then admitted as evidence <code>E</code>. The <code>provenance_id</code> is retained separately as provenance where the evaluation path supports it. Any explicit operational assumptions <code>A</code> are also added to the solver. These are optional reachability constraints rather than answers. The caller may force named nodes reachable or unreachable (<code>force_reachable_ids</code> / <code>force_unreachable_ids</code>) without adding option literals to <code>E</code>. Overlapping force-reachable and force-unreachable ids are rejected before the solver.</p>
+<p><strong>Apply</strong> shares theory and evidence projection with Inquire but not the same stopping rule. It can report a unique result where Inquire would still ask another question. The caller instead submits a structured worksheet of each question in the tree and any answers that they include. SMEme validates and evaluates them in a single batch call to the solver. A structured citation (excerpt, locator) is optional in this mode. Apply is useful for batch processing, integrations, regression tests, and audits in which evidence has already been collected or the complete submitted answer set needs to remain visible.</p>
+<p>In either mode, a solver computes logical consequences over constraints <code>T(IR) ∧ E ∧ A</code>, leaving unanswered questions open rather than treating them as false. <code>E</code> is admitted option literals and <code>A</code> is kept out of <code>E</code> so that adding answers remains conjunctive extension (§2). If admitted assumptions make the working base unsatisfiable, the case is <code>assumptions_inconsistent</code>, not a conclusion. The expert never reads or writes a formula or ontology expression, and requires no specialized formal-logic training. The model does not interpret the constraints or branching logic or compute their formal consequences. Only the symbolic constraint solver computes the logical consequences of the user-approved decision tree, admitted evidence, and any assumptions.</p>
+<div class="diagram" role="img" aria-label="Architecture diagram"><pre class="mermaid">flowchart TD
+    C["Domain context"] --> P["Model proposal"]
+    P --> D["Expert-reviewed decision tree<br/>(DTGraph)"]
+    D -->|"Deploy"| I["Validated IR<br/>(immutable compiled artifact)"]
+
+    S["Case sources"] --> EP["Agent evidence proposal"]
+    EP --> G["Structural admission gate"]
+    G --> E["Admitted evidence (E)"]
+    A["Assumptions (A)"] --> B["Working base<br/>T(IR) ∧ E ∧ A"]
+
+    I -->|"Encode on demand"| B
+    E --> B
+
+    B --> Q["Next blind question"]
+    B --> R["Structured report"]
+    B --> X["Counterfactual and support diagnostics"]</pre></div>
+<p>This suits decision support and logical analysis in domains whose rules can be expressed as explicit criteria and branches. Some applicable domains include regulatory and policy compliance, medical and legal decision support, diagnostics, troubleshooting, underwriting, eligibility, and, critically, AI governance.</p>
+<h3 id="revision-live-stale-and-redeploy">Revision: Live, Stale, and Redeploy</h3>
+<p>When the author changes the tree, those edits do not become the theory until they click Redeploy in the web editor. Each evaluation is stamped with the artifact it used, so a result stays interpretable under the rules it was evaluated against. The dashboard marks the tree <code>Live</code> when the saved graph matches the deployed snapshot and <code>Stale</code> when it does not. Evaluate refuses a stale graph with <code>stale_theory</code>. A review date on the tree appears as <code>review_overdue</code> on agent and MCP responses. Deploy and Redeploy are not MCP actions, and a wrong extraction in one case does not generate a proposed revision of the tree.</p>
+<hr />
+<h2 id="2-the-reasoning-regime">2. The reasoning regime</h2>
+<p>The propositional logic underlying SMEme's backend reasoner is sound, complete, and decidable over a finite atom space. The expert reviews the tree rather than a formula, and the semantic machinery stays limited to Boolean valuations and classical connectives. Z3 supplies a mature SAT decision procedure for that core (de Moura &amp; Bjørner 2008). Entailment reduces to satisfiability. <code>T(IR) ∧ E ∧ A ⊨ p</code> iff <code>T(IR) ∧ E ∧ A ∧ ¬p</code> is unsatisfiable.</p>
+<p><code>T(IR)</code> is the conjunction of three kinds of constraint. Guard interpretations tie each edge guard, the condition on an edge from one node to the next, to an option atom or to true. Reachability-scoped exclusivity, <code>reach(q) → ExactlyOne(options(q))</code>, forces one option only where the question is reached. A reachability recurrence equates each non-entry node's reachability with the disjunction of its guarded incoming paths, and the entry node is asserted reachable. Material implication is therefore scoped by reachability. When <code>reach(q)</code> is false, the implication is vacuously true and the question's options are left unconstrained. Those option values cannot activate a downstream node because every reachability term requires both a reachable source and an active guard. Separately, SMEme checks consistency before reporting consequences, so an unsatisfiable working base is returned as <code>inconsistent</code> rather than allowing classical explosion to appear as arbitrary entailments.</p>
+<p>SMEme trusts graph validation, graph-to-IR normalization, compilation, solver encoding, Z3, and result interpretation. The engineering value is that this trusted path is modular and built around a small semantic core that can be specified and tested independently. Finite atom spaces make the regime decidable, while practical performance at deployed sizes depends on instance size and structure—principally reachability constraints plus guarded exactly-one groups—even though satisfiability remains NP-complete in the worst case.</p>
+<h3 id="why-not-a-more-expressive-commitment-language">Why not a more expressive commitment language</h3>
+<p>Modal or first-order targets and non-standard semantics/inference rules turn expressiveness and authorizability in opposite directions. A more expressive logic admits a larger space of faithful-looking mistranslations and narrows the population of users competent to catch them. Increasing expressiveness can sacrifice decidability, increase worst-case complexity, enlarge the trusted translation surface, or make expert review harder. Encoding those relations through additional questions can duplicate state and expand the atom and path spaces. Relations that cannot be reduced upstream to truth values over a finite set of authorized propositions cannot be represented in SMEme's symbolic layer. SMEme deliberately pushes requirements outside its propositional fragment into upstream deterministic procedures rather than expanding the solver language.</p>
+<h3 id="closed-language-open-completions">Closed language, open completions</h3>
+<p>This is the most important semantic commitment in the system and the one most often misread. <em>Unanswered</em> is absence of evidence, resolved by asking. A <em>"don't know" answer option</em> to a question is admitted evidence about absence — a fact the constraints can branch on (e.g. "if submitted answer is 'don't know', go to question 9"). Both are useful and conflating them would reintroduce closed-world negation through the evidence path. The <em>language</em> is closed. The atom space is finite and runtime input cannot invent a proposition. The <em>world</em> is not. Missing facts are not treated as false. Under the closed-world assumption, every option of an unanswered reachable question would be logically false, colliding with <code>ExactlyOne</code> (see above) and rendering the case inconsistent. Under <em>negation as failure</em>, failure to prove an option would assert its negation, with the same collapse. The calculus rejects both readings. Unproven is <code>undetermined</code>, not <code>false</code>.</p>
+<h3 id="why-adding-an-answer-preserves-earlier-results-and-changing-one-does-not">Why adding an answer preserves earlier results and changing one does not</h3>
+<p>Adding unanswered-slot literals is conjunctive extension. If newly admitted literals <code>Δ</code> are added to the working base <code>B</code> and <code>B ∧ Δ</code> remains satisfiable, every remaining model is still a model of <code>B</code>; slots may close, but no previously possible completion is restored. If <code>Δ</code> contradicts <code>B</code>, the model class is empty and the case is inconsistent, not a stronger entailment. Changing a filled answer is not extension. It retracts the old option literals and installs another <code>E</code>, so the new working base is not <code>B</code> plus more evidence; SAT witnesses and consistency results from <code>B</code> do not transfer.</p>
+<p>Named in standard terms, the consequence relation is monotonic, and answering an open question only grows the premise set, so earlier consequences persist. Editing an answer shrinks that set before it grows again, and monotonicity says nothing about a step like that.</p>
+<p>Consequences are computed over completions:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Entailed</td>
+<td>holds in every completion of the working base</td>
+</tr>
+<tr>
+<td>Refuted</td>
+<td>fails in every completion</td>
+</tr>
+<tr>
+<td>Undetermined</td>
+<td>some completions yes, some no</td>
+</tr>
+<tr>
+<td>Inconsistent</td>
+<td>the working base is unsatisfiable</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>inconsistent</code> is a metalevel case status, not a third truth value; the object logic remains classically bivalent.</p>
+<p>These are Decision-DAG Calculus (Arista Labs, 2026) terms, not one wire vocabulary. Kernel queries use <code>entailed</code> / <code>not_entailed</code> / <code>possible</code> / <code>impossible</code> / <code>inconsistent</code>. Bulk Apply reports <code>SAT_UNIQUE</code>, <code>SAT_AMBIGUOUS</code>, <code>UNDER_DETERMINED</code>, or <code>UNSAT</code>, mapped in the product report to <code>concluded</code>, <code>multiple_outcomes_possible</code>, <code>needs_more_information</code>, or an inconsistency kind. The layers are related but not interchangeable.</p>
+<h3 id="resolvedb-versus-sat_unique"><code>Resolved(B)</code> versus <code>SAT_UNIQUE</code></h3>
+<p>The two modes stop on different conditions. Inquire treats the case as resolved only when the working base (<code>B</code>) is consistent and exactly one conclusion (<code>c</code>) is both possible and entailed. That is <code>Resolved(B)</code>. Entailment of <code>c</code> is not enough, as a subset of the evidence may force <code>reach(c)</code> while another conclusion remains possible.</p>
+<p>Apply reports <code>SAT_UNIQUE</code> when it finds a model with exactly one true conclusion <code>c</code> and then cannot find a model in which <code>c</code> is false. That does not mean no other conclusion is still possible. Another conclusion <code>c'</code> can remain reachable in some models that still make <code>c</code> true. <code>Resolved(B)</code> requires the possible set and the entailed set to be the same singleton. Core has a case where Apply returns <code>SAT_UNIQUE</code> while Inquire still asks another question.</p>
+<p>That case is well-formed. Deploy does not require a functional tree, a graph in which every complete assignment yields exactly one conclusion. Radio exclusivity only forces one option on a reached question. One option may activate two successors, so two conclusions can hold in the same case. Deploy fails if the theory is unsatisfiable or a declared conclusion can never be reached. Concurrent outcomes are left to the expert.</p>
+<hr />
+<h2 id="3-diagnostics-and-analysis-queries">3. Diagnostics and analysis queries</h2>
+<p>Inquire and Apply ask the solver two things about the working base <code>T(IR) ∧ E ∧ A</code>. First, whether it is satisfiable at all. Second, if it is, whether a conclusion holds in every remaining completion, fails in every one, or still depends on unanswered slots. Consistency of the admitted answers is the first SAT check and the rest are consequence queries over the open completion space.</p>
+<p>A case report is not the end of the reasoning. Diagnostics reuse that same procedure on a different base by dropping some of <code>E</code>, swapping an option, or adding reachability assumptions. None of that is a second LLM pass, and none of it is a derivation the user can replay by hand. Each result is another SAT or entailment answer, stamped to the compiled artifact it ran against. The queries that ship differ only in which base they build and what they ask of it.</p>
+<p><strong>Evidence sufficiency.</strong> If a conclusion already holds in every remaining completion, an unanswered question can be shown not to bear on that consequence. That is a demonstration that those facts would not change the queried result. The analysis ranges over <em>unanswered</em> slots in the deployed tree.</p>
+<p><strong>Counterfactuals.</strong> <code>smeme_reasoning_what_if</code> evaluates two working bases. One is the current answers. The other is a caller-supplied override. It returns a report for each side and a structural <code>delta</code>. Each side has its own consistency result. A witness for one proves nothing about the other. The query is a comparison under one caller-supplied alternative, including any resulting status change. It does not enumerate every admissible edit.</p>
+<p><strong>Reachability and repair.</strong> <code>smeme_reasoning_list_conclusions</code> names the conclusion space of the deployed artifact. <code>smeme_reasoning_how_to_reach</code> asks what would have to change to make a target conclusion entailed, or merely possible under some completion. Suggested plans are independent replacement candidates. Changing a filled answer is not conjunctive extension, so each plan is checked on its own <code>E′</code>. Inconsistent candidates are discarded, not presented as repairs.</p>
+<p><strong>Path stability.</strong> <code>smeme_reasoning_edit_affects_path</code> asks a narrower question. It reports whether a hypothetical override would break the <em>current forced path</em>, without touring the full alternate world.</p>
+<p><strong>Support.</strong> Decisive support (<code>smeme_reasoning_decisive_support</code>) computes an inclusion-minimal subset <code>S ⊆ E</code> that still entails the conclusion under the same deployed <code>T(IR)</code>, with assumptions held fixed. Inquire's resolving support (<code>S_R</code>) is a different object. It is a minimum-cardinality subset of the admitted worksheet assignments that still <em>resolves</em> the case in the stronger sense of <code>Resolved(B)</code> (§2).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Query</th>
+<th>What it answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evidence sufficiency</td>
+<td>Sensitivity over <em>unanswered</em> questions, not over admitted commitments</td>
+</tr>
+<tr>
+<td>Decisive support (<code>decisive_support</code>)</td>
+<td>Inclusion-minimal <code>S ⊆ E</code> that still entails the conclusion under the same <code>T(IR)</code>, assumptions held fixed</td>
+</tr>
+<tr>
+<td>Resolving support <code>S_R</code></td>
+<td>Minimum-cardinality worksheet support for Inquire's stronger <code>Resolved</code> predicate</td>
+</tr>
+<tr>
+<td>Counterfactual (<code>what_if</code>)</td>
+<td>A comparison under one caller-supplied alternative, including any resulting status change</td>
+</tr>
+<tr>
+<td>How to reach (<code>how_to_reach</code>)</td>
+<td>What would have to change for a target conclusion to be entailed or still possible</td>
+</tr>
+<tr>
+<td>Path stability (<code>edit_affects_path</code>)</td>
+<td>Whether an edit breaks the current forced path</td>
+</tr>
+</tbody>
+</table></div>
+<p>These queries do not rank which commitment the conclusion is most fragile to, and they do not certify that the tree asked every question it should have. They tell the user what follows, what still depends on missing answers, and what would have to change—under the theory they authorized and the evidence they admitted. Generating a narrative summary, asking broader follow-up questions, or taking action from the report remains the user's agent's job.</p>
+<hr />
+<h2 id="4-the-real-ai-unlock-llms-deliver">4. The Real AI Unlock LLMs Deliver</h2>
+<p>Achieving the purely deterministic <code>IR</code> handoff from human-user-verifiable to constraint-solver-computable described above, without complicated ontologies, formal notations, or knowledge engineers, is only plausible because of the NLP breakthrough delivered by LLMs. LLMs deliver the ability to manage the semantics of natural language in context, albeit through uninspectable, learned distributed semantics. Now neurosymbolic architectures can leave much of the natural-language and domain-specific semantics in natural-language propositions, while only the truth-functional structure of the decision procedure needs to be formalized. <strong>This NLP capability is the real unlock LLMs deliver to the longstanding AI project.</strong></p>
+<p><strong>The semantic risks from standard neurosymbolic formalisms do not disappear.</strong> The model can propose the wrong decision tree or fail to correctly associate evidence with an answer, or, more colloquially, <em>hallucinate</em>. The mitigation has always been to treat LLM output as <strong>proposals</strong> that require the user, through reasonably diligent review, to determine that the artifacts they can inspect are free of errors and omissions before authorizing them. Put more technically, in SMEme, commitment itself has two boundaries: <strong>rule commitment</strong> is the expert's Deploy of a reviewed decision tree into an immutable <code>IR</code>, from which <code>T(IR)</code> is derived, and <strong>case commitment</strong> is the admission of evidence <code>E</code> and assumptions <code>A</code> for a particular matter. The solver is the semantic authority over <code>T(IR) ∧ E ∧ A</code>. Neither the user nor the LLM can modify <code>T(IR)</code> during evaluation; the user supplies <code>E</code> and <code>A</code> and can replace the operative rules (<code>IR</code>) only by revising and Redeploying the tree. Attribution and agency stay with the human user, where they belong.</p>
+<p><strong>Agentic tool use is another direct consequence of the LLM breakthrough in NLP.</strong> Because the model can interpret the selected question, its context, and natural-language descriptions or schemas of available tools, it can autonomously choose a procedure, construct API calls, and generate ad hoc code or structured queries such as SQL and SPARQL. The invoked tools can perform deterministic operations such as sorting, counting, calculation, parsing, arithmetic, or other formal interpretation of context. Their outputs help the model form a proposed answer; only that answer enters SMEme in the authorized vocabulary, without importing the tools' semantics into <code>T(IR)</code> or giving the host authority over formal consequence. That autonomy carries no formal guarantee, but the proposal and the source the agent cites are inspectable before being admitted to the solver.</p>
+<p>SMEme is also compatible with fully deterministic evidence-gathering workflows. Because a deployed tree fixes its question identifiers and allowed answer sets, an external workflow can bind each question to a predetermined API call, database query, parser, calculation, or similar procedure and return a reproducible answer. Furthermore, the tree can easily be downloaded and shared as JSON data for peer review, testing, and colleague re-use. In any case, the resulting answer still passes through SMEme's evidence-admission gate.</p>
+<hr />
+<h2 id="5-what-smeme-does-not-certify">5. What SMEme does not certify</h2>
+<p>The trusted path described in §2 covers compilation and consequence, not meaning. Stated plainly and in one place, SMEme does not certify:</p>
+<ul>
+<li><strong>Tree fidelity.</strong> That the authorized tree asks the questions the governing rule actually turns on. A plausible substitute question yields exact reasoning and an unsound decision, and only expert review of the tree catches it.</li>
+<li><strong>Evidence truth.</strong> That an admitted answer is correct, or that the source behind its <code>provenance_id</code> supports it. Provenance identifies a source; it does not vouch for what the source says.</li>
+<li><strong>Artifact selection.</strong> That the model chose the right tool, constructed the call correctly, or searched the available context completely.</li>
+<li><strong>Question coverage.</strong> That the tree asked every question it should have. A missing branch has nothing to perturb, so no diagnostic ranges over it.</li>
+</ul>
+<p>Chat also fails closed when isolated re-extraction would be required. Ordinary conversation context may retain prior turns, so the default chat surface does not pretend that verification occurred.</p>
+<p>Two further limits are about scope rather than certification. The architecture reaches a domain only if its expertise decomposes into explicit criteria whose dependencies and alternatives can be represented as a finite decision DAG; where judgment is holistic prior to any protocol, there is no tree to author, and a tree authored anyway would be a distortion. And these claims hold over an atom space small enough that review can be exhaustive rather than sampled. Where that threshold falls is a measurement question; no scale figures are claimed.</p>
+<p>What SMEme does hold is narrower and mechanical. Given the deployed <code>IR</code> and the admitted <code>E</code> and <code>A</code>, the reported consequences are the consequences of <code>T(IR) ∧ E ∧ A</code>, computed by fixed, publicly available program code and stamped to the artifact that produced them.</p>
+<hr />
+<h2 id="6-how-to-learn-more-cite">6. How To Learn More &amp; Cite</h2>
+<p>Every implementation claim in this document describes SMEme Core <code>v0.9.12</code>, commit <code>92a2c9365c221a1edb7645f4d2d91eea9a4b68c1</code>, consumed by the Cloud overlay as image digest <code>sha256:a3e14ffa25e21641f79728b1ebed6f57f3f3726f362f2f6ff000b03feaf28e0b</code>. The public theory baseline is tag <code>decision-dag-calculus-v1.1</code>; the release bundles specification version 1.2. Claims resolve against that tagged release rather than against <code>main</code>. A description whose reader cannot identify the build being described is not checkable.</p>
+<p>Focused unit and contract tests in that release cover graph validation, compilation, consequence queries, ingest-gate reject codes, and unanswered-as-absent behaviour. A focused audit of 81 such tests against <code>v0.9.12</code> passed.</p>
+<p>The theory baseline tagged <code>decision-dag-calculus-v1.1</code> does not specify Inquire at all. Specification 1.2, bundled in this release, adds it as Part II target material in §13.9, which states that no public endpoint, MCP contract, or conformance row ships. This document describes the guided gather loop that does ship, which shares the blind task and the <code>Resolved(B)</code> stopping rule but not the isolated re-extraction that §13.9 requires.</p>
+<p>Guided Inquire ships on MCP as <code>smeme_reasoning_evaluate</code> and <code>smeme_reasoning_evaluate_continue</code>. Inquire and Apply request and report shapes ship with the MCP tools named above. SMEme Core is source-available at <a href="https://github.com/AristaLabs/smeme" target="_blank" rel="noopener noreferrer">AristaLabs/smeme</a>. The hosted product is <a href="https://smeme.ai" target="_blank" rel="noopener noreferrer">smeme.ai</a>. Arista Labs is at <a href="https://aristalabs.ai">aristalabs.ai</a>. Questions, MCP how-to, and examples belong in <a href="https://github.com/AristaLabs/smeme/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>.</p>
+<p>Cite this document as Arista Labs. (2026). <em>SMEme: A Practical Neurosymbolic AI System for User-Attributable Decision Analysis</em> (September 2, 2026). <a href="https://aristalabs.ai/smeme-architecture.html">https://aristalabs.ai/smeme-architecture.html</a>.</p>
+<h3 id="references">References</h3>
+<ul>
+<li>Arista Labs. (2026). <em>The SMEme Decision-DAG Calculus: Finite Decision DAGs as Propositional Reachability Theories</em> (Version 1.2; theory baseline <code>decision-dag-calculus-v1.1</code>). <a href="https://github.com/AristaLabs/smeme/blob/decision-dag-calculus-v1.1/docs/spec/decision-dag-calculus.md" target="_blank" rel="noopener noreferrer">Public specification</a>.</li>
+<li>de Moura, L., &amp; Bjørner, N. (2008). Z3: An efficient SMT solver. <em>Tools and Algorithms for the Construction and Analysis of Systems (TACAS 2008)</em>, LNCS 4963, 337–340.</li>
+</ul>
+      </div>
+    </article>
+  </main>
+  <footer>
+    <p class="footer-veteran">
+      <span>Veteran-owned and operated</span>
+      <span role="img" aria-label="American flag">&#127482;&#127480;</span>
+    </p>
+    <div class="footer-logo">ARISTA LABS</div>
+    <a href="mailto:contact@aristalabs.com" class="footer-email">contact@aristalabs.com</a>
+    <div class="social-links" aria-label="Arista Labs on the web">
+      <a href="https://github.com/AristaLabs/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on GitHub" title="GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+      </a>
+      <a href="https://x.com/aristalabs" class="social-link social-link-x" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on X" title="X">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.227-8.26L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+        </svg>
+      </a>
+    </div>
+    <span class="footer-copy">© 2026 Arista Labs, LLC. All rights reserved.</span>
+  </footer>
+
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "dark",
+      securityLevel: "strict",
+      flowchart: { htmlLabels: true, curve: "basis" }
+    });
+  </script>
+  <script>
+    (function () {
+      var nav = document.querySelector("nav");
+      var toggle = document.querySelector(".nav-toggle");
+      if (!nav || !toggle) return;
+      toggle.addEventListener("click", function () {
+        var open = nav.classList.toggle("nav-open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      });
+    })();
+  </script>
+</body>
+</html>
