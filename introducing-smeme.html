@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SMEme automates expert reasoning without handing the judgment to the model. Author a decision procedure in language you can read and edit; a constraint solver computes what follows." />
+  <meta property="og:site_name" content="Arista Labs" />
+  <meta property="og:title" content="Introducing SMEme" />
+  <meta property="og:description" content="Neurosymbolic reasoning you author, review, and deploy — from the chat you already use." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://aristalabs.ai/introducing-smeme.html" />
+  <meta property="article:published_time" content="2026-09-02" />
+  <link rel="canonical" href="https://aristalabs.ai/introducing-smeme.html" />
+  <meta property="og:image" content="https://aristalabs.ai/assets/og-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Arista Labs — preserve human agency in the age of AI" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://aristalabs.ai/assets/og-card.png" />
+  <script async src="https://plausible.io/js/pa-ny3cas2_OEgjYzkHGT2aN.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+  <title>Introducing SMEme — ARISTA LABS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://db.onlinewebfonts.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://db.onlinewebfonts.com/c/568e1a7e9b2ec90a53ab0cbced3584e7?family=SpaceX+PERSONAL+USE" rel="stylesheet" type="text/css" />
+  <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: radial-gradient(circle at top, #111827 0, #020617 55%, #020617 100%);
+    --bg-solid: #020617;
+    --accent-soft: #22d3ee;
+    --text: #f9fafb;
+    --muted: #9ca3af;
+    --border: rgba(148, 163, 184, 0.22);
+  }
+
+  body {
+    background: var(--bg);
+    background-color: var(--bg-solid);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at top, rgba(56, 189, 248, 0.10), transparent 55%),
+      radial-gradient(circle at bottom, rgba(79, 70, 229, 0.22), transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    max-width: 1120px;
+    margin: 0 auto;
+    background: linear-gradient(to bottom, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.78));
+    backdrop-filter: blur(22px);
+  }
+
+  .nav-logo {
+    font-family: 'SpaceX PERSONAL USE', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    -webkit-text-stroke: 0.35px currentColor;
+    text-shadow:
+      0 0 10px rgba(34, 211, 238, 0.8),
+      0 0 20px rgba(34, 211, 238, 0.65),
+      0 0 40px rgba(34, 211, 238, 0.5),
+      1px 1px 0 rgba(0,0,0,0.4),
+      2px 2px 0 rgba(0,0,0,0.3),
+      3px 3px 0 rgba(0,0,0,0.25),
+      4px 4px 0 rgba(0,0,0,0.2),
+      5px 5px 4px rgba(0,0,0,0.5);
+  }
+
+  .nav-links { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+  .nav-link {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.8));
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .nav-link:hover, .nav-link.active { color: var(--accent-soft); border-color: var(--accent-soft); }
+
+  .nav-toggle {
+    display: none;
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    padding: 0;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 10px;
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.8));
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .nav-toggle span { display: block; width: 16px; height: 1.5px; background: var(--muted); }
+  nav.nav-open .nav-toggle { border-color: var(--accent-soft); }
+  nav.nav-open .nav-toggle span { background: var(--accent-soft); }
+  nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+  nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .nav-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; margin-left: 4px; }
+  .social-links { display: inline-flex; align-items: center; gap: 2px; }
+  .social-link {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px;
+    color: var(--muted); text-decoration: none; border-radius: 999px;
+  }
+  .social-link:hover { color: var(--accent-soft); background: rgba(34, 211, 238, 0.08); }
+  .social-link:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+  .social-link svg { display: block; width: 18px; height: 18px; }
+  .social-link-x svg { width: 15px; height: 15px; }
+
+  main {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    padding: 120px 24px 80px;
+  }
+
+  .post {
+    width: min(760px, 100%);
+    margin: 0 auto;
+  }
+
+  .post-kicker {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    margin-bottom: 16px;
+  }
+
+  .post-kicker a { color: inherit; text-decoration: none; }
+  .post-kicker a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .post h1 {
+    font-size: clamp(28px, 4.4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .post-dek {
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--muted);
+    margin: -4px 0 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .post-byline {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-body { font-size: 16px; line-height: 1.75; color: #e5e7eb; }
+
+  .post-body h2 {
+    font-size: clamp(20px, 3vw, 26px);
+    letter-spacing: -0.02em;
+    margin: 48px 0 16px;
+    color: var(--text);
+  }
+
+  .post-body h3 {
+    font-size: 17px;
+    font-weight: 650;
+    margin: 32px 0 12px;
+    color: var(--text);
+  }
+
+  .post-body p { margin: 0 0 1.15em; }
+
+  .post-body blockquote {
+    margin: 0 0 1.15em;
+    padding: 12px 16px 12px 20px;
+    border-left: 2px solid var(--accent-soft);
+    color: #d1d5db;
+    background: rgba(15, 23, 42, 0.45);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .post-body blockquote p { margin: 0; }
+
+  .post-signoff {
+    margin-top: 2.4em;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .post-body a { color: var(--accent-soft); text-decoration: none; border-bottom: 1px solid transparent; }
+  .post-body a:hover { border-bottom-color: var(--accent-soft); }
+
+  .post-body code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.86em;
+    color: #a5f3fc;
+    background: rgba(15, 23, 42, 0.65);
+    padding: 0.08em 0.35em;
+    border-radius: 4px;
+  }
+
+  .post-body strong { color: var(--text); font-weight: 650; }
+
+  .post-body ul, .post-body ol { margin: 0 0 1.15em 1.2em; }
+  .post-body li { margin: 0.35em 0; }
+
+  .post-body hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  .post-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 1.4em;
+    font-size: 14px;
+  }
+
+  .post-body th, .post-body td {
+    text-align: left;
+    vertical-align: top;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-body th { color: var(--muted); font-weight: 550; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .post-body .table-wrap { overflow-x: auto; margin: 0 0 1.4em; }
+  .post-body .table-wrap table { margin: 0; }
+
+  .diagram {
+    margin: 28px 0 36px;
+    padding: 16px 8px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: rgba(15, 23, 42, 0.7);
+    overflow-x: auto;
+  }
+
+  .diagram .mermaid { display: flex; justify-content: center; }
+
+  footer {
+    position: relative;
+    z-index: 3;
+    padding: 24px 24px 32px;
+    border-top: 1px solid rgba(15, 23, 42, 0.9);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .footer-logo {
+    font-family: 'SpaceX PERSONAL USE', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    -webkit-text-stroke: 0.3px currentColor;
+    text-shadow:
+      0 0 8px rgba(34, 211, 238, 0.7),
+      0 0 16px rgba(34, 211, 238, 0.55),
+      0 0 28px rgba(34, 211, 238, 0.45),
+      1px 1px 0 rgba(0,0,0,0.4),
+      2px 2px 0 rgba(0,0,0,0.3),
+      3px 3px 0 rgba(0,0,0,0.25),
+      4px 4px 2px rgba(0,0,0,0.5);
+  }
+
+  .footer-copy { font-size: 11px; letter-spacing: 0.08em; }
+  .footer-veteran {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .footer-email {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+  }
+  .footer-email:hover { color: var(--accent-soft); border-color: var(--accent-soft); }
+
+  @media (max-width: 768px) {
+    nav { padding: 12px 16px; flex-wrap: wrap; row-gap: 4px; }
+    .nav-toggle { display: flex; }
+    .nav-actions { margin-left: auto; }
+    .nav-links {
+      display: none; width: 100%; order: 3; margin-left: 0;
+      flex-direction: column; align-items: stretch; gap: 8px; padding: 8px 0 4px;
+    }
+    nav.nav-open .nav-links { display: flex; }
+    .nav-link { font-size: 10px; padding: 10px 12px; text-align: center; }
+    main { padding: 104px 20px 56px; }
+    .post-body { font-size: 15px; }
+  }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">ARISTA LABS</a>
+    <div class="nav-links" id="site-nav">
+      <a href="index.html" class="nav-link">Mission</a>
+      <a href="guiding-principles.html" class="nav-link">Guiding Principles</a>
+      <a href="product.html" class="nav-link">Product</a>
+      <a href="blog.html" class="nav-link active">Blog</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <div class="social-links" aria-label="Arista Labs on the web">
+        <a href="https://github.com/AristaLabs/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on GitHub" title="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+        </a>
+        <a href="https://x.com/aristalabs" class="social-link social-link-x" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on X" title="X">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.227-8.26L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+          </svg>
+        </a>
+      </div>
+      <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <main>
+        <article class="post">
+      <p class="post-kicker"><a href="blog.html">Blog</a> / Product</p>
+      <h1>Introducing SMEme</h1>
+      <p class="post-dek">Neurosymbolic reasoning you author, review, and deploy — from the chat you already use</p>
+      <p class="post-byline">Arista Labs · September 2, 2026</p>
+      <div class="post-body">
+<p>Space Coast, FL — I am thoroughly excited to announce SMEme (pronounced <em>smee-mee</em>), the first technology from Arista Labs. SMEme automates expert reasoning without handing the judgment to the model. You author the decision procedure — legal analysis, policy compliance, financial review, and other expert judgment — in language you can read and edit, and a constraint solver, not the language model, computes what follows from it. That pairing of a large language model with a solver is what makes it a neurosymbolic architecture.</p>
+<p>I wrote separately about <a href="neurosymbolic-ai.html">why that architecture matters</a>. In short, the LLM translates, the solver decides what follows, and the human has to be able to read, approve, and edit the artifact in between. This post takes the user's side of that architecture and follows a single case from the first prompt to the finished report.</p>
+<p>SMEme is engineered so that you do not have to fine tune a model, learn a formal language or ontology, hire consultants or forward-deployed engineers to put it to work. Setup is one MCP connection from the AI platform you already use (ChatGPT, Claude, and others). The same SMEme tool surface can also be called from programmatic workflows built with Zapier, n8n, LangGraph, ServiceNow, and similar systems.</p>
+<p>SMEme Core is distributed source-available under a <a href="https://github.com/AristaLabs/smeme/blob/main/LICENSE.md" target="_blank" rel="noopener noreferrer">Sustainable Use License</a> (inspired by n8n), so you can self-host. SMEme is also offered as a hosted service with a generous free tier at <a href="https://smeme.ai" target="_blank" rel="noopener noreferrer">smeme.ai</a>.</p>
+<p>We want AI to expand human agency, and we want to earn revenue through a transparent, fair, and consensual exchange of value. Arista Labs never shares or sells your knowledge artifacts or any of your information. You control the knowledge artifacts you build. You can create, update, delete, and share them as you see fit. Delete a decision tree and the compiled artifacts behind it are deleted with it.</p>
+<h2 id="legal-reasoning-directly-in-chat">Legal reasoning, directly in chat</h2>
+<p>Consider a U.S. company negotiating a cross-border deal with a foreign business. Counsel must determine how the payments should be characterized and whether the U.S. company has an obligation to withhold tax.</p>
+<p>The lawyer — or their client, preparing for a consultation — works in an MCP client such as ChatGPT or Claude Cowork:</p>
+<blockquote>
+<p>I want to build a new SMEme decision tree. It needs to determine when a U.S. company has an obligation to withhold taxes during a cross-border deal with a foreign business. I’ve added several files that can be taken as authoritative concerning the rules and context for the decision tree to the local project folder. Do a web search and research current IRS, treaty, tariff, and other relevant authorities and updates.</p>
+</blockquote>
+<p>That is enough semantic nudging for the agent to find the SMEme MCP tool <code>smeme_authoring_design_guidance</code> and draft the decision tree in the prescribed JSON format. The tree becomes — and remains — a user-owned artifact. SMEme processes it, but never shares it; you can. It downloads as JSON for peer review, for testing, or for a colleague who wants to run it themselves.</p>
+<p>There is also an AI-assisted wizard on the SMEme web app. Users can upload files, use AI-enhanced web search, and build the tree in a deterministic save-as-you-go experience. In either path, the LLM can use the decision tree as context while the user reads, edits, and maintains it.</p>
+<p>Once the user is satisfied that the tree represents their decision process, including the possible outcomes, a simpler prompt is enough:</p>
+<blockquote>
+<p>Send this tree to SMEme for validation.</p>
+</blockquote>
+<p>The structured JSON goes to SMEme Core through <code>smeme_authoring_validate_graph</code>. If the tree is invalid, SMEme returns a rich error and the agent can edit with your input until validation passes. <code>smeme_authoring_create_draft</code> then saves it as an unpublished draft on the SMEme dashboard.</p>
+<p>Nothing is deployed automatically. When the author is ready, they click <strong>Deploy</strong> on the dashboard. That click is the commitment that triggers SMEme to deterministically compile the reviewed tree into a frozen <strong>intermediate representation</strong>, and that artifact — not the tree still open in the editor — is what the reasoning tools run. Later edits do not change it. The dashboard marks a tree <strong>Live</strong> while the saved graph still matches what was deployed and <strong>Stale</strong> once it does not, and evaluation refuses a stale tree rather than reasoning under rules the author has not approved. Earlier deployed artifacts are retained, so a result from last quarter stays interpretable under the rules it was actually evaluated against. Deploy, Redeploy, listing or hiding a deployed tree, and deleting one all happen on the dashboard. Authoring, validation, drafting, and every reasoning call are available to agents and programmatic workflows.</p>
+<p>When a new matter arrives, counsel runs whatever facts have been gathered so far:</p>
+<blockquote>
+<p>Run my SMEme cross-border tax withholding decision tree on the ACME, Inc. matter concerning their sale of asset X to party D. The matter is already tracked in the CRM as matter #123. I’ve put a few files in the local project folder. Make sure to check the cloud drive for the associate’s intake diagnostic memo. There’s been some email correspondence you need to check as well.</p>
+</blockquote>
+<p>The agent finds the deployed tree with <code>smeme_reasoning_list</code> and opens an <strong>Inquire</strong> session with <code>smeme_reasoning_evaluate</code>. Inquire is the mode for cases assembled as you go. SMEme returns one question at a time, with the valid answer choices for that question. The tree’s topology is withheld from that task, so the agent cannot see the other questions, the branching conditions, or the possible conclusions, and it does not choose what comes next. Withholding the payload is structural. Keeping the model from reconstructing the tree out of earlier turns is a matter of instruction, since ordinary chat retains its own context. Where a case would demand genuinely isolated verification, SMEme stops the chat loop rather than pretending that isolation held.</p>
+<p>For each question, the agent gathers facts from the agreement, email, corporate records, tax forms, prior research, and other local or MCP-connected sources. To admit an answer through <code>smeme_reasoning_evaluate_continue</code> it must attach a provenance identifier pointing at the source it drew that answer from, and where it cannot find the fact it can abstain instead of guessing. Provenance records where a proposed answer came from, not whether the source establishes it. Weighing that remains counsel’s judgment.</p>
+<p>Counsel can review the evidence, inspect the cited sources, override an answer, add another source, or ask the agent to resolve a contradiction. Overriding an answer is a revision rather than an addition, so SMEme re-derives the case from the corrected answer set instead of carrying forward what the old one supported. The session is durable. It can be left and resumed if more information has to be gathered.</p>
+<p>This uses the LLM for searching, reading, comparing, deduplicating, and structuring language — the work it is particularly good at. SMEme decides what to ask next after each answer is admitted. The loop continues until SMEme returns a report.</p>
+<p>Where counsel already holds a complete answer sheet — an audit pack, a matter triggered from the CRM, a pre-filled diagnostic — the second mode runs the same tree in one pass. That mode is <strong>Apply</strong>. The agent calls <code>smeme_reasoning_template_get</code>, <code>smeme_reasoning_validate_answers</code>, and <code>smeme_reasoning_evaluate_answers</code>. Apply reasons over the same deployed artifact, but it stops on a different rule, so it can report a single outcome in a case where Inquire would still ask another question.</p>
+<p>Neither mode needs a model to supply the answers. Because a deployed tree fixes its question identifiers and its allowed answer options, an external workflow can bind each question to a predetermined API call, database query, parser, or calculation and return a reproducible answer. Apply submits those answers as one sheet. Inquire can be driven the same way a question at a time, with the workflow reading the identifier SMEme just asked about and running the routine bound to it. Answers from a routine and answers from an agent pass through the same admission gate.</p>
+<p>If the facts support a conclusion, the report comes back concluded, with that conclusion and the decision path associated with it. Otherwise it reports that multiple outcomes remain possible, that more information is needed, or that the admitted answers are inconsistent — SMEme says which, rather than fabricating a single answer.</p>
+<p>The reasoning tools stay in the same chat:</p>
+<ul>
+<li>What changes if the services are performed outside the United States? — <code>smeme_reasoning_what_if</code></li>
+<li>Which of the admitted answers were doing the work behind the withholding conclusion? — <code>smeme_reasoning_decisive_support</code></li>
+<li>What facts would have to change to reach a different conclusion? — <code>smeme_reasoning_list_conclusions</code>, then <code>smeme_reasoning_how_to_reach</code></li>
+<li>Would changing this answer break the path the current answers force? — <code>smeme_reasoning_edit_affects_path</code></li>
+</ul>
+<p>Every result is structured, and can inform downstream work. The LLM can draft a memorandum from a prepared template, prepare questions for the counterparty, update the deal record from a CRM runbook, or compose an email to a reviewing partner. New facts come in; context changes; run it again. Tariffs shift or new thresholds appear; work through the same chat agent to revise the tree and validate it, then <strong>Redeploy</strong> from the dashboard.</p>
+<p>The LLM chooses how to read the file and which answer to propose. SMEme decides whether that answer is structurally admissible, what to ask next, and what follows from the authorized tree. The consequence relation is handled by a constraint solver under a published <a href="https://github.com/AristaLabs/smeme/blob/decision-dag-calculus-v1.1/docs/spec/decision-dag-calculus.md" target="_blank" rel="noopener noreferrer">Decision-DAG calculus</a>, not by the language model. SMEme supplies the determinate result under the legal analysis counsel authorized.</p>
+<p>Because the model's work stops at translation, every improvement in it accrues to SMEme without touching the gate. As models get better, SMEme gets better. A growing industry is betting on the same premise from the other direction, capturing how experts think and turning it into training data, which sharpens exactly the translator SMEme depends on. Training internalizes expertise into weights, while SMEme keeps the authorized procedure external, inspectable, revisable, and user-owned — never training data for us or anyone else. That contrast deserves a post of its own ... stay tuned.</p>
+<p>In this example the user starts in chat and stays in chat, except for the login and the dashboard click to deploy. A natural next use case is verification, checking an LLM-generated decision against an approved corporate policy or compliance regime.</p>
+<p>We look forward to seeing how you SMEme. Try it free at <a href="https://smeme.ai" target="_blank" rel="noopener noreferrer">smeme.ai</a>. The <a href="https://smeme.ai/mcp" target="_blank" rel="noopener noreferrer">MCP reference</a> is public, and <a href="https://github.com/AristaLabs/smeme" target="_blank" rel="noopener noreferrer">SMEme Core</a> is on GitHub. The <a href="smeme-architecture.html">architecture write-up</a> states every implementation claim against a pinned build and says plainly what SMEme does not certify.</p>
+<p class="post-signoff">Dan Arista, PhD<br />Founder/Manager<br />Arista Labs, LLC</p>
+      </div>
+    </article>
+  </main>
+  <footer>
+    <p class="footer-veteran">
+      <span>Veteran-owned and operated</span>
+      <span role="img" aria-label="American flag">&#127482;&#127480;</span>
+    </p>
+    <div class="footer-logo">ARISTA LABS</div>
+    <a href="mailto:contact@aristalabs.com" class="footer-email">contact@aristalabs.com</a>
+    <div class="social-links" aria-label="Arista Labs on the web">
+      <a href="https://github.com/AristaLabs/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on GitHub" title="GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+      </a>
+      <a href="https://x.com/aristalabs" class="social-link social-link-x" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on X" title="X">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.227-8.26L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+        </svg>
+      </a>
+    </div>
+    <span class="footer-copy">© 2026 Arista Labs, LLC. All rights reserved.</span>
+  </footer>
+
+  <script>
+    (function () {
+      var nav = document.querySelector("nav");
+      var toggle = document.querySelector(".nav-toggle");
+      if (!nav || !toggle) return;
+      toggle.addEventListener("click", function () {
+        var open = nav.classList.toggle("nav-open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      });
+    })();
+  </script>
+</body>
+</html>
