@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="When evidence gathering is already automated, judgment still needs an authorized decision procedure. What a compiled tree adds that a research script cannot." />
+  <meta property="og:site_name" content="Arista Labs" />
+  <meta property="og:title" content="When Research Is Already Automated, Judgment Still Needs a Decision Procedure" />
+  <meta property="og:description" content="What a compiled decision procedure adds once evidence gathering is already automated." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://aristalabs.ai/when-research-is-already-automated.html" />
+  <meta property="article:published_time" content="2026-09-08" />
+  <link rel="canonical" href="https://aristalabs.ai/when-research-is-already-automated.html" />
+  <meta property="og:image" content="https://aristalabs.ai/assets/og-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Arista Labs — preserve human agency in the age of AI" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://aristalabs.ai/assets/og-card.png" />
+  <script async src="https://plausible.io/js/pa-ny3cas2_OEgjYzkHGT2aN.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+  <title>When Research Is Already Automated, Judgment Still Needs a Decision Procedure — ARISTA LABS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://db.onlinewebfonts.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://db.onlinewebfonts.com/c/568e1a7e9b2ec90a53ab0cbced3584e7?family=SpaceX+PERSONAL+USE" rel="stylesheet" type="text/css" />
+  <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: radial-gradient(circle at top, #111827 0, #020617 55%, #020617 100%);
+    --bg-solid: #020617;
+    --accent-soft: #22d3ee;
+    --text: #f9fafb;
+    --muted: #9ca3af;
+    --border: rgba(148, 163, 184, 0.22);
+  }
+
+  body {
+    background: var(--bg);
+    background-color: var(--bg-solid);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at top, rgba(56, 189, 248, 0.10), transparent 55%),
+      radial-gradient(circle at bottom, rgba(79, 70, 229, 0.22), transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    max-width: 1120px;
+    margin: 0 auto;
+    background: linear-gradient(to bottom, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.78));
+    backdrop-filter: blur(22px);
+  }
+
+  .nav-logo {
+    font-family: 'SpaceX PERSONAL USE', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    -webkit-text-stroke: 0.35px currentColor;
+    text-shadow:
+      0 0 10px rgba(34, 211, 238, 0.8),
+      0 0 20px rgba(34, 211, 238, 0.65),
+      0 0 40px rgba(34, 211, 238, 0.5),
+      1px 1px 0 rgba(0,0,0,0.4),
+      2px 2px 0 rgba(0,0,0,0.3),
+      3px 3px 0 rgba(0,0,0,0.25),
+      4px 4px 0 rgba(0,0,0,0.2),
+      5px 5px 4px rgba(0,0,0,0.5);
+  }
+
+  .nav-links { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+  .nav-link {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.8));
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .nav-link:hover, .nav-link.active { color: var(--accent-soft); border-color: var(--accent-soft); }
+
+  .nav-toggle {
+    display: none;
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    padding: 0;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 10px;
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.8));
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .nav-toggle span { display: block; width: 16px; height: 1.5px; background: var(--muted); }
+  nav.nav-open .nav-toggle { border-color: var(--accent-soft); }
+  nav.nav-open .nav-toggle span { background: var(--accent-soft); }
+  nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+  nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .nav-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; margin-left: 4px; }
+  .social-links { display: inline-flex; align-items: center; gap: 2px; }
+  .social-link {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px;
+    color: var(--muted); text-decoration: none; border-radius: 999px;
+  }
+  .social-link:hover { color: var(--accent-soft); background: rgba(34, 211, 238, 0.08); }
+  .social-link:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+  .social-link svg { display: block; width: 18px; height: 18px; }
+  .social-link-x svg { width: 15px; height: 15px; }
+
+  main {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    padding: 120px 24px 80px;
+  }
+
+  .post {
+    width: min(760px, 100%);
+    margin: 0 auto;
+  }
+
+  .post-kicker {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    margin-bottom: 16px;
+  }
+
+  .post-kicker a { color: inherit; text-decoration: none; }
+  .post-kicker a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .post h1 {
+    font-size: clamp(28px, 4.4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .post-dek {
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--muted);
+    margin: -4px 0 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .post-byline {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-body { font-size: 16px; line-height: 1.75; color: #e5e7eb; }
+
+  .post-body h2 {
+    font-size: clamp(20px, 3vw, 26px);
+    letter-spacing: -0.02em;
+    margin: 48px 0 16px;
+    color: var(--text);
+  }
+
+  .post-body h3 {
+    font-size: 17px;
+    font-weight: 650;
+    margin: 32px 0 12px;
+    color: var(--text);
+  }
+
+  .post-body p { margin: 0 0 1.15em; }
+
+  .post-body blockquote {
+    margin: 0 0 1.15em;
+    padding: 12px 16px 12px 20px;
+    border-left: 2px solid var(--accent-soft);
+    color: #d1d5db;
+    background: rgba(15, 23, 42, 0.45);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .post-body blockquote p { margin: 0; }
+
+  .post-signoff {
+    margin-top: 2.4em;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .post-body a { color: var(--accent-soft); text-decoration: none; border-bottom: 1px solid transparent; }
+  .post-body a:hover { border-bottom-color: var(--accent-soft); }
+
+  .post-body code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.86em;
+    color: #a5f3fc;
+    background: rgba(15, 23, 42, 0.65);
+    padding: 0.08em 0.35em;
+    border-radius: 4px;
+  }
+
+  .post-body strong { color: var(--text); font-weight: 650; }
+
+  .post-body ul, .post-body ol { margin: 0 0 1.15em 1.2em; }
+  .post-body li { margin: 0.35em 0; }
+
+  .post-body hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  .post-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 1.4em;
+    font-size: 14px;
+  }
+
+  .post-body th, .post-body td {
+    text-align: left;
+    vertical-align: top;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-body th { color: var(--muted); font-weight: 550; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .post-body .table-wrap { overflow-x: auto; margin: 0 0 1.4em; }
+  .post-body .table-wrap table { margin: 0; }
+
+  .diagram {
+    margin: 28px 0 36px;
+    padding: 16px 8px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: rgba(15, 23, 42, 0.7);
+    overflow-x: auto;
+  }
+
+  .diagram .mermaid { display: flex; justify-content: center; }
+
+  footer {
+    position: relative;
+    z-index: 3;
+    padding: 24px 24px 32px;
+    border-top: 1px solid rgba(15, 23, 42, 0.9);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .footer-logo {
+    font-family: 'SpaceX PERSONAL USE', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    -webkit-text-stroke: 0.3px currentColor;
+    text-shadow:
+      0 0 8px rgba(34, 211, 238, 0.7),
+      0 0 16px rgba(34, 211, 238, 0.55),
+      0 0 28px rgba(34, 211, 238, 0.45),
+      1px 1px 0 rgba(0,0,0,0.4),
+      2px 2px 0 rgba(0,0,0,0.3),
+      3px 3px 0 rgba(0,0,0,0.25),
+      4px 4px 2px rgba(0,0,0,0.5);
+  }
+
+  .footer-copy { font-size: 11px; letter-spacing: 0.08em; }
+  .footer-veteran {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .footer-email {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+  }
+  .footer-email:hover { color: var(--accent-soft); border-color: var(--accent-soft); }
+
+  @media (max-width: 768px) {
+    nav { padding: 12px 16px; flex-wrap: wrap; row-gap: 4px; }
+    .nav-toggle { display: flex; }
+    .nav-actions { margin-left: auto; }
+    .nav-links {
+      display: none; width: 100%; order: 3; margin-left: 0;
+      flex-direction: column; align-items: stretch; gap: 8px; padding: 8px 0 4px;
+    }
+    nav.nav-open .nav-links { display: flex; }
+    .nav-link { font-size: 10px; padding: 10px 12px; text-align: center; }
+    main { padding: 104px 20px 56px; }
+    .post-body { font-size: 15px; }
+  }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">ARISTA LABS</a>
+    <div class="nav-links" id="site-nav">
+      <a href="index.html" class="nav-link">Mission</a>
+      <a href="guiding-principles.html" class="nav-link">Guiding Principles</a>
+      <a href="product.html" class="nav-link">Product</a>
+      <a href="blog.html" class="nav-link active">Blog</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <div class="social-links" aria-label="Arista Labs on the web">
+        <a href="https://github.com/AristaLabs/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on GitHub" title="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+        </a>
+        <a href="https://x.com/aristalabs" class="social-link social-link-x" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on X" title="X">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.227-8.26L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+          </svg>
+        </a>
+      </div>
+      <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <main>
+        <article class="post">
+      <p class="post-kicker"><a href="blog.html">Blog</a> / Product</p>
+      <h1>When Research Is Already Automated, Judgment Still Needs a Decision Procedure</h1>
+      <p class="post-byline">Arista Labs · September 8, 2026</p>
+      <div class="post-body">
+<p><em>This is the third post in a series introducing Arista Labs’ SMEme neurosymbolic decision-support platform. The first laid out the <a href="smeme-architecture.html">neurosymbolic architecture</a>. Models propose, people authorize, and formal reasoning determines what follows. The second showed what that looks like in a <a href="introducing-smeme.html">legal decision-support workflow</a> using ordinary chat agents and SMEme’s tools. Here I take Bridgewater’s publicly presented Pocket Analyst Tool as the research environment, and show what a decision procedure adds once evidence gathering is already automated.</em></p>
+<p>Space Coast, FL — At LangChain’s Interrupt 2026 conference, Bridgewater’s AIA Labs presented its in-house Pocket Analyst Tool (PAT). They described PAT as a research chatbot that uses LLMs and agentic workflows to give users conversational access to decades of curated investment knowledge, encoded in research guidance, analytical plans, data, and internal tools.</p>
+<p>In an impressive display of deterministic agentic coding, PAT turns structured analysis plans into Python, treating code generation as something closer to a compiler pipeline than open-ended agent improvisation. When a PAT user asks a question, the system clarifies the research task, searches the relevant data and knowledge sources, produces a structured analysis plan, generates and validates the Python needed to execute it, runs the analysis, and returns the results in the same conversational workflow. All of this runs through a controlled LangGraph workflow.</p>
+<p>For the remainder of this post I will use the “oil shock” investigation Bridgewater used in its demonstration. This is strictly for expository purposes. I have no affiliation with Bridgewater and no knowledge of PAT beyond what they publicly shared.</p>
+<h2 id="pat-can-establish-what-is-happening">PAT can establish what is happening. A decision tree can return a conclusion or the next question still worth researching.</h2>
+<p>From what I understood of the presentation, an analyst investigating a rise in oil prices can use PAT to query Bridgewater’s institutional knowledge and other information sources directly through its chat interface. By the end of that interaction, the analyst may know much more about what is happening and how it correlates with past events. Supply is down by some amount. Inventories are moving in a particular direction. Spare capacity exists, but perhaps not in the right place or on the right timetable. Prices are reacting differently from prior episodes.</p>
+<p>The analyst still has to decide what is relevant, what inferences those facts allow, and what additional information could change those inferences or support new ones. The research is ultimately in service of a <em>judgment</em>. SMEme gives that judgment an explicit decision procedure, represented as a human-readable tree the user can review and authorize and that can be compiled into a propositional theory for logical analysis.</p>
+<p>Once the research is automated, the remaining cost is no longer gathering evidence and generating proposals. It is missing a question the decision procedure turns on, spending a run on a question that cannot change the result, failing to draw a conclusion the admitted facts already force, or drawing one the authorized procedure does not allow. SMEme is the decision support surface that addresses all of this.</p>
+<p>Continuing with the oil-shock example, imagine the user has a SMEme decision tree, call it <em>Research Procedure for Oil Shock Analysis</em>. The tree might ask whether the supply disruption is material, whether it is likely to persist, whether inventories can absorb the gap, and whether spare capacity can actually reach the affected market. PAT can request the set of questions and possible answers and use completed research as context to generate answers and submit them in bulk.</p>
+<p>SMEme uses a constraint solver to compute what follows from the propositional theory compiled from the user-authored decision tree, potentially reaching a conclusion. If no conclusion is forced, <em>SMEme can then infer which unresolved question can still affect the outcome</em>, say, the spare-capacity question. That question goes to PAT as the next research task. PAT searches, retrieves, calculates, compares, or asks the analyst for whatever is needed, and generates an answer. The analyst reviews the answer, potentially asking for more analysis, and ultimately admits some answer. SMEme recomputes what follows, either a conclusion or the next logically consequential question.</p>
+<p>That is not an automated questionnaire. A form, a business-rules path, or a script for this run can ask the next questions on any arbitrary condition and print a conclusion. They execute a path. SMEme compiles the reviewed tree into a logical theory and evaluates what the admitted facts entail under the whole decision procedure. The next question is computed from logical consequence, not from the next node. Of course, the same computation can say when <em>not</em> to research something. One unanswered question may concern refinery utilization, another spare capacity. If the refinery question cannot change the current result no matter how it is answered, there is little reason to spend another PAT run on it.</p>
+<p>All this said, open-ended research remains constantly available to the user. What SMEme adds is the neurosymbolic interface to the <em>symbolic</em> reasoning that is closed by deductive consequence and computed by a constraint solver. The <em>neuro</em> side keeps it all natural language and transparently integrated into the chat UI of tools like PAT.</p>
+<h2 id="a-conclusion-is-not-the-end-of-the-analysis">A conclusion is not the end of the analysis. The user can ask which admitted facts forced it, what would have to change to undo it, and what would follow under different assumptions.</h2>
+<p><strong>Decisive support</strong> returns the smallest sets of admitted answers that still force the current conclusion. A fact that appears in none of them did no work in the result, however much it cost to establish. Whether inventories can absorb the gap may have taken a full PAT run to settle and turn out to be irrelevant to the decision analysis. There is usually more than one such set, which is worth knowing on its own, because it means the conclusion does not rest on a single line of evidence.</p>
+<p>A <strong>what-if</strong> evaluates the admitted answers and a specified override under the same authorized tree, then returns both reports and a structured delta of what flipped. Ask what follows if spare capacity can reach the affected market, and that is the comparison. Two ordinary evaluations would get you the reports. They would not get you the rest. <strong>How-to-reach</strong> searches for the fewest answer changes that would make a named outcome entailed. The user can also ask whether a hypothetical answer change would keep the current forced path entailed, and which conclusions become entailed, or cease to be entailed, under that change. Those are questions put to the tree as a logical theory, not answers produced by walking a path.</p>
+<p>While research is still open, reaching an outcome has two senses, and which one you want depends on how complete the case is. Is the outcome forced however the unanswered questions come back, or is there merely some way of answering them that gets there? Early in an investigation the second is usually the more useful question, because it tells the analyst whether a target is still live before the remaining research has come in.</p>
+<p><strong>Any of those questions can be asked under a supposition.</strong> The user can tell SMEme to take it as given that the disruption persists, then ask what follows, what is still live, and what would have to change under that condition. The procedure can be interrogated the way the analyst might actually reason about the investigation.</p>
+<p>Of course, none of this makes SMEme the arbiter of whether the underlying research is accurate. If PAT uses the wrong series or the wrong test for “spare capacity,” SMEme can still reason correctly over the wrong premise. What SMEme blocks is a conclusion that does not follow from the authorized tree given the admitted answers. The remedy for a wrong admitted answer, or a tree that omitted the right distinction, is admission and revision — not the solver.</p>
+<p>As mentioned earlier, SMEme never constrains the research or chat more generally. It simply exposes MCP tools for the agent to use. Those same tools can also be called from controlled workflows built in systems such as LangGraph.</p>
+<h2 id="research-agents-can-also-write-the-decision-procedure">Research agents can also write the decision procedure. They can revise an existing tree, or propose a new one, from the sources they already access.</h2>
+<p>If no suitable tree exists, research agents like PAT can help propose one from the knowledge sources they already search. They can pull prior cases, how a quantity was measured, and exceptions where apparent capacity failed to substitute. The analyst reviews the questions, answer choices, and branching conditions before authorizing it. The model proposes. The user decides what belongs in the tree.</p>
+<p>Similarly, research can be used to update and edit existing decision trees. Suppose historical cases reveal that the tree’s spare-capacity question is too crude. Capacity may exist on paper but still be unavailable quickly enough, geographically stranded, or unable to reach the affected market. The user can revise the question or add a branch. Another expert can review the change. The new version can be compared with the old one, redeployed, shared with selected users, and reused on later cases. A new tree can be authorized when the investigation has uncovered a judgment no existing decision procedure captures.</p>
+<p>A revision can also be checked before any case runs through it. With no answers at all, SMEme will validate that the procedure is satisfiable and identify which outcomes remain reachable. An outcome that quietly became unreachable when a branch was added is better found then than in the next investigation.</p>
+<p>The tree therefore stays living even after it becomes operative. What began as one analyst’s decision procedure can become versioned, peer-reviewed institutional knowledge.</p>
+<p>This coordinates nicely with self-improving workflows like PAT’s Teach. Teach is designed so that corrections and failures can improve what the system knows how to do rather than disappear with the conversation. A SMEme tree gives some of that learning another place to live. It becomes an explicit decision artifact whose changes can be inspected, reviewed, compared, and carried into the next investigation.</p>
+<p>SMEme is at <a href="https://smeme.ai" target="_blank" rel="noopener noreferrer">smeme.ai</a>. The <a href="https://smeme.ai/mcp" target="_blank" rel="noopener noreferrer">MCP reference</a> is public, and source is available at <a href="https://github.com/AristaLabs/smeme" target="_blank" rel="noopener noreferrer">SMEme Core</a>.</p>
+<p class="post-signoff">Dan Arista, PhD<br />Founder &amp; Managing Member<br />Arista Labs, LLC</p>
+      </div>
+    </article>
+  </main>
+  <footer>
+    <p class="footer-veteran">
+      <span>Veteran-owned and operated</span>
+      <span role="img" aria-label="American flag">&#127482;&#127480;</span>
+    </p>
+    <div class="footer-logo">ARISTA LABS</div>
+    <a href="mailto:contact@aristalabs.ai" class="footer-email">contact@aristalabs.ai</a>
+    <div class="social-links" aria-label="Arista Labs on the web">
+      <a href="https://github.com/AristaLabs/" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on GitHub" title="GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+      </a>
+      <a href="https://x.com/aristalabs" class="social-link social-link-x" target="_blank" rel="noopener noreferrer" aria-label="Arista Labs on X" title="X">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.227-8.26L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+        </svg>
+      </a>
+    </div>
+    <span class="footer-copy">© 2026 Arista Labs, LLC. All rights reserved.</span>
+  </footer>
+
+  <script>
+    (function () {
+      var nav = document.querySelector("nav");
+      var toggle = document.querySelector(".nav-toggle");
+      if (!nav || !toggle) return;
+      toggle.addEventListener("click", function () {
+        var open = nav.classList.toggle("nav-open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      });
+    })();
+  </script>
+</body>
+</html>
