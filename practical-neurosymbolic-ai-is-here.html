@@ -268,6 +268,78 @@
     font-size: inherit;
   }
 
+  .code-frame,
+  .diagram-frame {
+    margin: 0 0 1.4em;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.82);
+    overflow: hidden;
+  }
+
+  .code-label,
+  .diagram-frame figcaption {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .code-frame pre,
+  .diagram-frame pre {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .code-frame pre {
+    padding: 18px 20px;
+    color: #d8dee9;
+  }
+
+  .diagram-frame {
+    overflow-x: auto;
+  }
+
+  .diagram-frame pre {
+    width: max-content;
+    min-width: 100%;
+    padding: 18px 20px;
+    overflow: visible;
+    color: #dbeafe;
+    font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.45;
+    font-variant-ligatures: none;
+    letter-spacing: 0;
+  }
+
+  .lang-python .hll { background-color: #6e7681 }
+  .lang-python .c, .lang-python .ch, .lang-python .cm,
+  .lang-python .c1, .lang-python .cs { color: #8b949e; font-style: italic }
+  .lang-python .k, .lang-python .kc, .lang-python .kd,
+  .lang-python .kn, .lang-python .kp, .lang-python .kr,
+  .lang-python .kt { color: #ff7b72 }
+  .lang-python .o, .lang-python .ow { color: #79c0ff }
+  .lang-python .n { color: #c9d1d9 }
+  .lang-python .na, .lang-python .nb, .lang-python .nc,
+  .lang-python .nd, .lang-python .ne, .lang-python .nf,
+  .lang-python .nl, .lang-python .nn, .lang-python .nt { color: #d2a8ff }
+  .lang-python .nv, .lang-python .vc, .lang-python .vg,
+  .lang-python .vi, .lang-python .vm { color: #ffa657 }
+  .lang-python .m, .lang-python .mb, .lang-python .mf,
+  .lang-python .mh, .lang-python .mi, .lang-python .mo { color: #79c0ff }
+  .lang-python .s, .lang-python .sa, .lang-python .sb,
+  .lang-python .sc, .lang-python .dl, .lang-python .sd,
+  .lang-python .s1, .lang-python .s2, .lang-python .se,
+  .lang-python .sh, .lang-python .si, .lang-python .sx,
+  .lang-python .sr, .lang-python .ss { color: #a5d6ff }
+  .lang-python .bp, .lang-python .fm { color: #ffa657 }
+
   .post-body strong { color: var(--text); font-weight: 650; }
 
   .post-body ul, .post-body ol { margin: 0 0 1.15em 1.2em; }
@@ -425,7 +497,9 @@
 <p><strong>Jev</strong> takes state and typed questions and returns typed answers with probabilities. Choice picks from a set of options and returns per-option probabilities plus a confidence score. Score rates against ordered levels. Noul answers yes or no as a probability. Every question in a request is answered in one parallel pass, and TypeSafe <a href="https://docs.typesafe.ai/concepts/how-to-build-with-system-one" rel="noopener noreferrer" target="_blank">says</a> most queries complete in about 100 milliseconds.</p>
 <p><strong>SMEme</strong> takes a decision tree an expert writes in natural language, made of questions with finite allowed answers, branching conditions, and conclusions. When the expert Deploys it, SMEme compiles it into a frozen intermediate representation (IR). Every evaluation encodes that IR into a propositional theory for the solver. At runtime, SMEme's <code>Inquire</code> loop takes the evidence admitted so far and returns the next unanswered question that can still change the outcome, as a blind task with an id, a stem, and the allowed options. Once the case resolves, it returns a report instead.</p>
 <p>When put side by side, the Jev + SMEme integration nearly writes itself:</p>
-<pre class="lang-text"><code class="language-text">SMEme task                     Jev question
+<figure class="diagram-frame">
+  <figcaption>Adapter boundary</figcaption>
+  <pre class="lang-text"><code class="language-text">SMEme task                     Jev question
 ──────────                     ────────────
 stem (question)       →        Choice.instructions
 options               →        Choice.criteria (+ adapter-only "none fit")
@@ -436,12 +510,15 @@ choice        →  mapped back to the exact option                 →    select
 confidence    →  admission policy (never sent)
                  evidence fingerprint                            →    provenance_id
 </code></pre>
+</figure>
 <p>That's the whole adapter. SMEme already emits the kind of object Jev was built to consume.</p>
 <p>This works because SMEme's questions aren't prompts. <strong>They are the vocabulary of the decision procedure.</strong> Each question and its allowed answers define propositions the theory reasons over. Jev, an LLM, or a person can determine which authorized answer best fits the evidence. Jev can't invent a new answer by design, since it only returns one of the options it's handed. SMEme is what makes those options the ones the expert authorized, and it rejects anything else, whoever proposed it. None of them decides what admitting that answer entails under the procedure.</p>
 <p>To Jev, the question is the prompt and the state is the context. Its weights induce a distribution over the authorized answers, and the judgment is which answer best fits the case. That is bounded classification, not open-ended generation. In the architecture post I left all of that to an LLM. Now a dedicated component can take the state an LLM assembled and return structured answers over a natural-language vocabulary the expert authorized. Once admitted, those answers are the native inputs to SMEme's System 2 reasoning. <strong>Practical neurosymbolic AI is here.</strong></p>
 <h2 id="the-harness">The harness</h2>
 <p>SMEme's AI-assisted decision tree authoring is built on LangGraph. This is the same stack on the other side of the loop.</p>
-<pre class="lang-text"><code class="language-text">                        LangGraph
+<figure class="diagram-frame">
+  <figcaption>LangGraph harness</figcaption>
+  <pre class="lang-text"><code class="language-text">                        LangGraph
             state · routing · retries · interrupts
                             │
                             ▼
@@ -471,8 +548,11 @@ confidence    →  admission policy (never sent)
 
 (Jev unsure or none fit → agent; agent's evidence → Jev judges blind)
 </code></pre>
+</figure>
 <p>The division of authority is the point:</p>
-<pre class="lang-text"><code class="language-text">Expert      → the procedure (rule commitment)
+<figure class="diagram-frame">
+  <figcaption>Authority by component</figcaption>
+  <pre class="lang-text"><code class="language-text">Expert      → the procedure (rule commitment)
 LangGraph   → what runs
 Jev         → fast judgment over supplied state; independent re-answer to check an agent's choice
 LLM agent   → open-ended investigation
@@ -480,10 +560,13 @@ SQL / code  → exact computation
 Admission   → case commitment (a person, or the operator's threshold)
 SMEme       → what follows
 </code></pre>
+</figure>
 <p><strong>LangGraph controls what runs. SMEme controls what follows.</strong></p>
 <p>Jev doesn't gather evidence. It knows only the state it's handed, and it can't search, query, or read beyond it. So every Jev judgment sits downstream of something that assembled that state. Their <a href="https://docs.typesafe.ai/concepts/use-case-map" rel="noopener noreferrer" target="_blank">use-case map</a> puts Jev inside that gather workflow but only to score and rank candidates already in hand and select the context a later judgment will see. A question's path can be Jev retrieving and Jev judging. Gathering and proposing are still separate jobs, and each question can pair them differently.</p>
 <p>The traditional reasoning LLM is still the one you want when the job is <strong>finding</strong> the context a question needs — writing queries, reading across sources, synthesizing a bundle. That is generative retrieval, and Jev isn't designed to do that. On those questions the LLM will usually have already picked an option while assembling the state. Keep that conclusion out of what Jev sees, or Jev is scoring the agent's write-up instead of independently judging the evidence. Jev then answers the same blind question from the gathered state alone. Agreement is a check on the agent's answer choice given the context it claims supports it. It is not a check that the bundle contains the right evidence or that all the relevant information was gathered. LangChain <a href="https://www.langchain.com/blog/jev-agent-evals-langsmith" rel="noopener noreferrer" target="_blank">ran a similar pattern</a> to score agent traces and found Jev cheaper and more repeatable than LLM-as-judge in their early test. They grade the investigator to monitor quality. Here the verdict gates admission to SMEme's reasoning pipeline; disagree, <code>none fit</code>, or low confidence, and the HITL sees both answers before anything becomes case evidence.</p>
-<pre class="lang-text"><code class="language-text">LLM agent ──▶ gathers evidence ──▶ state
+<figure class="diagram-frame">
+  <figcaption>Independent agent verification</figcaption>
+  <pre class="lang-text"><code class="language-text">LLM agent ──▶ gathers evidence ──▶ state
     │                                │
     ▼                                ▼
 proposes an option        Jev answers the same blind
@@ -492,182 +575,187 @@ proposes an option        Jev answers the same blind
          yes, confident  →  admission policy
          otherwise       →  a person sees both answers
 </code></pre>
+</figure>
 <h2 id="the-code">The code</h2>
 <p>This is a sketch, not a packaged example. On September 21, 2026, I tested the Jev → LangGraph interrupt/resume → SMEme continuation path against Jev 1.13.0 and SMEme's hosted MCP surface. Jev chose an answer from SMEme's authorized options, a reviewer admitted it, and SMEme recomputed the theory and returned the next question. The gatherer, agent, and SQL adapters remain illustrative. The Jev calls follow TypeSafe's published Python SDK, and the SMEme calls follow our public <a href="https://smeme.ai/mcp" rel="noopener noreferrer" target="_blank">MCP contract</a>.</p>
-<pre class="lang-python"><code class="language-python">import hashlib, json
-from typing import TypedDict
-from langgraph.graph import StateGraph, START, END
-from langgraph.types import interrupt, Command
-from langgraph.checkpoint.memory import InMemorySaver
-from typesafe_sdk import Choice, TypeSafeClient
+<div class="code-frame">
+  <div class="code-label">Python · LangGraph + Jev + SMEme</div>
+  <pre class="lang-python"><code class="language-python"><span class="kn">import</span> <span class="nn">hashlib</span><span class="o">,</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypedDict</span>
+<span class="kn">from</span> <span class="nn">langgraph.graph</span> <span class="kn">import</span> <span class="n">StateGraph</span><span class="p">,</span> <span class="n">START</span><span class="p">,</span> <span class="n">END</span>
+<span class="kn">from</span> <span class="nn">langgraph.types</span> <span class="kn">import</span> <span class="n">interrupt</span><span class="p">,</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">langgraph.checkpoint.memory</span> <span class="kn">import</span> <span class="n">InMemorySaver</span>
+<span class="kn">from</span> <span class="nn">typesafe_sdk</span> <span class="kn">import</span> <span class="n">Choice</span><span class="p">,</span> <span class="n">TypeSafeClient</span>
 
-jev = TypeSafeClient(model="jev-1.13.0")   # pin: thresholds are tuned per version
-JEV_FLOOR = 0.5                            # first pass: escalate to an agent; after an agent: person if below
-NONE_FIT = "__none__"                      # adapter-only escape; never sent to SMEme
+<span class="n">jev</span> <span class="o">=</span> <span class="n">TypeSafeClient</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;jev-1.13.0&quot;</span><span class="p">)</span>   <span class="c1"># pin: thresholds are tuned per version</span>
+<span class="n">JEV_FLOOR</span> <span class="o">=</span> <span class="mf">0.5</span>                            <span class="c1"># first pass: escalate to an agent; after an agent: person if below</span>
+<span class="n">NONE_FIT</span> <span class="o">=</span> <span class="s2">&quot;__none__&quot;</span>                      <span class="c1"># adapter-only escape; never sent to SMEme</span>
 
-# Deployment config, owned by the tree's operator — not by any model, and not by SMEme.
-ROUTES = {                                  # SMEme question_id -&gt; first node
-    "q_us_incorporated": "jev",             # state already holds the evidence
-    "q_ownership_disclosed": "gather",      # gather first, then Jev judges
-    "q_beneficial_owner_verified": "agent", # agent investigates; Jev judges the bundle
-    "q_sanctions_list_match": "sql",        # exact lookup proposes directly
-}
-AUTO_ADMIT = {"q_us_incorporated": 0.90}   # unlisted questions always go to a person
-
-
-class Case(TypedDict, total=False):
-    tree_id: str
-    session_id: str
-    subject: dict      # case state, assembled and filtered by retrieval/code
-    task: dict         # SMEme blind task: question_id, stem, options
-    proposal: dict     # option, confidence, source, provenance_id
-    decision: dict     # what actually gets admitted (option may be None = abstain)
-    report: dict       # SMEme's terminal report
-    blocked: dict      # fail-closed pause (e.g. isolated_evaluations_required)
+<span class="c1"># Deployment config, owned by the tree&#39;s operator — not by any model, and not by SMEme.</span>
+<span class="n">ROUTES</span> <span class="o">=</span> <span class="p">{</span>                                  <span class="c1"># SMEme question_id -&gt; first node</span>
+    <span class="s2">&quot;q_us_incorporated&quot;</span><span class="p">:</span> <span class="s2">&quot;jev&quot;</span><span class="p">,</span>             <span class="c1"># state already holds the evidence</span>
+    <span class="s2">&quot;q_ownership_disclosed&quot;</span><span class="p">:</span> <span class="s2">&quot;gather&quot;</span><span class="p">,</span>      <span class="c1"># gather first, then Jev judges</span>
+    <span class="s2">&quot;q_beneficial_owner_verified&quot;</span><span class="p">:</span> <span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="c1"># agent investigates; Jev judges the bundle</span>
+    <span class="s2">&quot;q_sanctions_list_match&quot;</span><span class="p">:</span> <span class="s2">&quot;sql&quot;</span><span class="p">,</span>        <span class="c1"># exact lookup proposes directly</span>
+<span class="p">}</span>
+<span class="n">AUTO_ADMIT</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;q_us_incorporated&quot;</span><span class="p">:</span> <span class="mf">0.90</span><span class="p">}</span>   <span class="c1"># unlisted questions always go to a person</span>
 
 
-async def smeme(tool: str, **args) -&gt; dict:
-    # smeme_session: an authenticated MCP ClientSession for SMEme's MCP server
-    result = await smeme_session.call_tool(tool, args)
-    return json.loads(result.content[0].text)
+<span class="k">class</span> <span class="nc">Case</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">tree_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="nb">dict</span>      <span class="c1"># case state, assembled and filtered by retrieval/code</span>
+    <span class="n">task</span><span class="p">:</span> <span class="nb">dict</span>         <span class="c1"># SMEme blind task: question_id, stem, options</span>
+    <span class="n">proposal</span><span class="p">:</span> <span class="nb">dict</span>     <span class="c1"># option, confidence, source, provenance_id</span>
+    <span class="n">decision</span><span class="p">:</span> <span class="nb">dict</span>     <span class="c1"># what actually gets admitted (option may be None = abstain)</span>
+    <span class="n">report</span><span class="p">:</span> <span class="nb">dict</span>       <span class="c1"># SMEme&#39;s terminal report</span>
+    <span class="n">blocked</span><span class="p">:</span> <span class="nb">dict</span>      <span class="c1"># fail-closed pause (e.g. isolated_evaluations_required)</span>
 
 
-def absorb(out: dict) -&gt; dict:
-    if out.get("report"):
-        return {"report": out["report"], "task": None, "proposal": None}
-    if out.get("task"):
-        update = {"task": out["task"], "proposal": None, "decision": None}
-        if "inquiry_session_id" in out:
-            update["session_id"] = out["inquiry_session_id"]
-        return update
-    return {"blocked": out, "task": None}   # fail-closed; e.g. isolated_evaluations_required
+<span class="k">async</span> <span class="k">def</span> <span class="nf">smeme</span><span class="p">(</span><span class="n">tool</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="c1"># smeme_session: an authenticated MCP ClientSession for SMEme&#39;s MCP server</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">smeme_session</span><span class="o">.</span><span class="n">call_tool</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
 
-def evidence_ref(subject: dict) -&gt; str:
-    # Fingerprint of the exact state that was judged. A production adapter should
-    # point at the host's evidence bundle (document locators, record ids), so an
-    # auditor can reopen what the judgment was *about*, not just who made it.
-    return hashlib.sha256(json.dumps(subject, sort_keys=True).encode()).hexdigest()[:12]
+<span class="k">def</span> <span class="nf">absorb</span><span class="p">(</span><span class="n">out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;report&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;report&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;report&quot;</span><span class="p">],</span> <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;proposal&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task&quot;</span><span class="p">):</span>
+        <span class="n">update</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">],</span> <span class="s2">&quot;proposal&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="k">if</span> <span class="s2">&quot;inquiry_session_id&quot;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+            <span class="n">update</span><span class="p">[</span><span class="s2">&quot;session_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;inquiry_session_id&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">update</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;blocked&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>   <span class="c1"># fail-closed; e.g. isolated_evaluations_required</span>
 
 
-async def start(case: Case):
-    return absorb(await smeme("smeme_reasoning_evaluate",
-                              decision_tree_id=case["tree_id"]))
+<span class="k">def</span> <span class="nf">evidence_ref</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># Fingerprint of the exact state that was judged. A production adapter should</span>
+    <span class="c1"># point at the host&#39;s evidence bundle (document locators, record ids), so an</span>
+    <span class="c1"># auditor can reopen what the judgment was *about*, not just who made it.</span>
+    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">12</span><span class="p">]</span>
 
 
-def ask_jev(case: Case):
-    # Jev judges only case["subject"]. Never put the agent's conclusion in
-    # subject: TypeSafe notes Jev doesn't treat state as hostile.
-    task = case["task"]
-    keys = {f"opt_{i}": opt for i, opt in enumerate(task["options"])}
-    criteria = {**keys, NONE_FIT: "None of the listed answers is supported by the state"}
-    r = jev.system_one(
-        state=case["subject"],
-        questions={"q": Choice(instructions=task["stem"], criteria=criteria)},
-    )
-    a = r.answers["q"]
-    judged = {
-        "option": keys.get(a.choice),      # None when Jev picked NONE_FIT
-        "confidence": a.confidence,
-        "source": "jev",
-        "provenance_id": f"evidence:{evidence_ref(case['subject'])}/jev:{r.model}",
-    }
-    prior = case.get("proposal") or {}
-    if prior.get("source") != "agent":
-        return {"proposal": judged}
-    # Jev-as-judge: the agent already proposed; this checks the agent's choice.
-    agree = judged["option"] is not None and judged["option"] == prior.get("option")
-    if agree and judged["confidence"] &gt;= JEV_FLOOR:
-        return {"proposal": {**judged, "option": prior["option"], "source": "agent+jev"}}
-    return {"proposal": {**judged, "source": "jev-judge",
-                         "agent_option": prior.get("option")}}
+<span class="k">async</span> <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="n">case</span><span class="p">:</span> <span class="n">Case</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">absorb</span><span class="p">(</span><span class="k">await</span> <span class="n">smeme</span><span class="p">(</span><span class="s2">&quot;smeme_reasoning_evaluate&quot;</span><span class="p">,</span>
+                              <span class="n">decision_tree_id</span><span class="o">=</span><span class="n">case</span><span class="p">[</span><span class="s2">&quot;tree_id&quot;</span><span class="p">]))</span>
 
 
-async def ask_agent(case: Case):
-    # Investigate and assemble evidence. Return a proposal separately so it
-    # never lands in subject, which Jev will score next.
-    # found holds source material (excerpts, records), not the agent's summary.
-    found, proposal = await research_agent.investigate(case["task"], case["subject"])
-    return {"subject": {**case["subject"], **found},
-            "proposal": {**proposal, "source": "agent"}}
+<span class="k">def</span> <span class="nf">ask_jev</span><span class="p">(</span><span class="n">case</span><span class="p">:</span> <span class="n">Case</span><span class="p">):</span>
+    <span class="c1"># Jev judges only case[&quot;subject&quot;]. Never put the agent&#39;s conclusion in</span>
+    <span class="c1"># subject: TypeSafe notes Jev doesn&#39;t treat state as hostile.</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">]</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;opt_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">opt</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">opt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">])}</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">keys</span><span class="p">,</span> <span class="n">NONE_FIT</span><span class="p">:</span> <span class="s2">&quot;None of the listed answers is supported by the state&quot;</span><span class="p">}</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">jev</span><span class="o">.</span><span class="n">system_one</span><span class="p">(</span>
+        <span class="n">state</span><span class="o">=</span><span class="n">case</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">],</span>
+        <span class="n">questions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">Choice</span><span class="p">(</span><span class="n">instructions</span><span class="o">=</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;stem&quot;</span><span class="p">],</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">)},</span>
+    <span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">answers</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span>
+    <span class="n">judged</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;option&quot;</span><span class="p">:</span> <span class="n">keys</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">choice</span><span class="p">),</span>      <span class="c1"># None when Jev picked NONE_FIT</span>
+        <span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;jev&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;provenance_id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;evidence:</span><span class="si">{</span><span class="n">evidence_ref</span><span class="p">(</span><span class="n">case</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">/jev:</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">prior</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;proposal&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">prior</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;agent&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;proposal&quot;</span><span class="p">:</span> <span class="n">judged</span><span class="p">}</span>
+    <span class="c1"># Jev-as-judge: the agent already proposed; this checks the agent&#39;s choice.</span>
+    <span class="n">agree</span> <span class="o">=</span> <span class="n">judged</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">judged</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">prior</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;option&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">agree</span> <span class="ow">and</span> <span class="n">judged</span><span class="p">[</span><span class="s2">&quot;confidence&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">JEV_FLOOR</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;proposal&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">judged</span><span class="p">,</span> <span class="s2">&quot;option&quot;</span><span class="p">:</span> <span class="n">prior</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">],</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;agent+jev&quot;</span><span class="p">}}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;proposal&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">judged</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;jev-judge&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;agent_option&quot;</span><span class="p">:</span> <span class="n">prior</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;option&quot;</span><span class="p">)}}</span>
 
 
-async def ask_sql(case: Case):
-    return {"proposal": await lookup.propose(case["task"], case["subject"])}
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ask_agent</span><span class="p">(</span><span class="n">case</span><span class="p">:</span> <span class="n">Case</span><span class="p">):</span>
+    <span class="c1"># Investigate and assemble evidence. Return a proposal separately so it</span>
+    <span class="c1"># never lands in subject, which Jev will score next.</span>
+    <span class="c1"># found holds source material (excerpts, records), not the agent&#39;s summary.</span>
+    <span class="n">found</span><span class="p">,</span> <span class="n">proposal</span> <span class="o">=</span> <span class="k">await</span> <span class="n">research_agent</span><span class="o">.</span><span class="n">investigate</span><span class="p">(</span><span class="n">case</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">],</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">case</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">found</span><span class="p">},</span>
+            <span class="s2">&quot;proposal&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">proposal</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;agent&quot;</span><span class="p">}}</span>
 
 
-async def gather(case: Case):
-    # Assemble the evidence this question needs (a SQL query, a retrieve-and-filter
-    # step, or an LLM agent reading across sources), then hand it to Jev. The new
-    # state gets a new evidence fingerprint, so provenance tracks what was judged.
-    found = await gatherer.collect(case["task"], case["subject"])
-    return {"subject": {**case["subject"], **found}}
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ask_sql</span><span class="p">(</span><span class="n">case</span><span class="p">:</span> <span class="n">Case</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;proposal&quot;</span><span class="p">:</span> <span class="k">await</span> <span class="n">lookup</span><span class="o">.</span><span class="n">propose</span><span class="p">(</span><span class="n">case</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">],</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">])}</span>
 
 
-def admit(case: Case):
-    p, qid = case["proposal"], case["task"]["question_id"]
-    bar = AUTO_ADMIT.get(qid)
-    judged_and_disagreed = p.get("source") == "jev-judge"
-    if (not judged_and_disagreed
-            and p["option"] is not None and bar is not None
-            and p.get("confidence", 0) &gt;= bar):
-        return {"decision": {"option": p["option"],
-                             "provenance_id": p["provenance_id"]}}
-    # Otherwise a person commits: accept the proposal, change it, or abstain.
-    # jev-judge carries agent_option so the reviewer sees both.
-    return {"decision": interrupt({"question": case["task"], "proposal": p})}
+<span class="k">async</span> <span class="k">def</span> <span class="nf">gather</span><span class="p">(</span><span class="n">case</span><span class="p">:</span> <span class="n">Case</span><span class="p">):</span>
+    <span class="c1"># Assemble the evidence this question needs (a SQL query, a retrieve-and-filter</span>
+    <span class="c1"># step, or an LLM agent reading across sources), then hand it to Jev. The new</span>
+    <span class="c1"># state gets a new evidence fingerprint, so provenance tracks what was judged.</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gatherer</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">case</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">],</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">case</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">found</span><span class="p">}}</span>
 
 
-async def commit(case: Case):
-    d = case["decision"]
-    args = {
-        "inquiry_session_id": case["session_id"],
-        "question_id": case["task"]["question_id"],
-    }
-    if d.get("option") is not None:
-        args["selected_option"] = d["option"]
-        args["provenance_id"] = d.get("provenance_id")
-    return absorb(await smeme("smeme_reasoning_evaluate_continue", **args))
+<span class="k">def</span> <span class="nf">admit</span><span class="p">(</span><span class="n">case</span><span class="p">:</span> <span class="n">Case</span><span class="p">):</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">qid</span> <span class="o">=</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;proposal&quot;</span><span class="p">],</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">][</span><span class="s2">&quot;question_id&quot;</span><span class="p">]</span>
+    <span class="n">bar</span> <span class="o">=</span> <span class="n">AUTO_ADMIT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">qid</span><span class="p">)</span>
+    <span class="n">judged_and_disagreed</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;jev-judge&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">judged_and_disagreed</span>
+            <span class="ow">and</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bar</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;confidence&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">bar</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;option&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">],</span>
+                             <span class="s2">&quot;provenance_id&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;provenance_id&quot;</span><span class="p">]}}</span>
+    <span class="c1"># Otherwise a person commits: accept the proposal, change it, or abstain.</span>
+    <span class="c1"># jev-judge carries agent_option so the reviewer sees both.</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="n">interrupt</span><span class="p">({</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">],</span> <span class="s2">&quot;proposal&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">})}</span>
 
 
-def next_step(case: Case):
-    if case.get("report") or case.get("blocked"):
-        return END
-    return ROUTES.get(case["task"]["question_id"], "jev")
+<span class="k">async</span> <span class="k">def</span> <span class="nf">commit</span><span class="p">(</span><span class="n">case</span><span class="p">:</span> <span class="n">Case</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;decision&quot;</span><span class="p">]</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;inquiry_session_id&quot;</span><span class="p">:</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;session_id&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;question_id&quot;</span><span class="p">:</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">][</span><span class="s2">&quot;question_id&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;option&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="p">[</span><span class="s2">&quot;selected_option&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span>
+        <span class="n">args</span><span class="p">[</span><span class="s2">&quot;provenance_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;provenance_id&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">absorb</span><span class="p">(</span><span class="k">await</span> <span class="n">smeme</span><span class="p">(</span><span class="s2">&quot;smeme_reasoning_evaluate_continue&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">))</span>
 
 
-def after_jev(case: Case):
-    p = case["proposal"]
-    if p.get("source") != "jev":
-        return "admit"   # already judged an agent's proposal
-    return "agent" if p["option"] is None or p["confidence"] &lt; JEV_FLOOR else "admit"
+<span class="k">def</span> <span class="nf">next_step</span><span class="p">(</span><span class="n">case</span><span class="p">:</span> <span class="n">Case</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;report&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">case</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;blocked&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">END</span>
+    <span class="k">return</span> <span class="n">ROUTES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">case</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">][</span><span class="s2">&quot;question_id&quot;</span><span class="p">],</span> <span class="s2">&quot;jev&quot;</span><span class="p">)</span>
 
 
-g = StateGraph(Case)
-for name, fn in [("start", start), ("jev", ask_jev), ("agent", ask_agent),
-                 ("sql", ask_sql), ("gather", gather), ("admit", admit),
-                 ("commit", commit)]:
-    g.add_node(name, fn)
-g.add_edge(START, "start")
-g.add_conditional_edges("start", next_step)
-g.add_conditional_edges("commit", next_step)
-g.add_conditional_edges("jev", after_jev)
-g.add_edge("gather", "jev")
-g.add_edge("agent", "jev")
-g.add_edge("sql", "admit")
-g.add_edge("admit", "commit")
-graph = g.compile(checkpointer=InMemorySaver())
-</code></pre>
+<span class="k">def</span> <span class="nf">after_jev</span><span class="p">(</span><span class="n">case</span><span class="p">:</span> <span class="n">Case</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">case</span><span class="p">[</span><span class="s2">&quot;proposal&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;jev&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;admit&quot;</span>   <span class="c1"># already judged an agent&#39;s proposal</span>
+    <span class="k">return</span> <span class="s2">&quot;agent&quot;</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;confidence&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">JEV_FLOOR</span> <span class="k">else</span> <span class="s2">&quot;admit&quot;</span>
+
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">StateGraph</span><span class="p">(</span><span class="n">Case</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">fn</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;jev&quot;</span><span class="p">,</span> <span class="n">ask_jev</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">ask_agent</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;sql&quot;</span><span class="p">,</span> <span class="n">ask_sql</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;gather&quot;</span><span class="p">,</span> <span class="n">gather</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;admit&quot;</span><span class="p">,</span> <span class="n">admit</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s2">&quot;commit&quot;</span><span class="p">,</span> <span class="n">commit</span><span class="p">)]:</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">START</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_conditional_edges</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">next_step</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_conditional_edges</span><span class="p">(</span><span class="s2">&quot;commit&quot;</span><span class="p">,</span> <span class="n">next_step</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_conditional_edges</span><span class="p">(</span><span class="s2">&quot;jev&quot;</span><span class="p">,</span> <span class="n">after_jev</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;gather&quot;</span><span class="p">,</span> <span class="s2">&quot;jev&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="s2">&quot;jev&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;sql&quot;</span><span class="p">,</span> <span class="s2">&quot;admit&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;admit&quot;</span><span class="p">,</span> <span class="s2">&quot;commit&quot;</span><span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">checkpointer</span><span class="o">=</span><span class="n">InMemorySaver</span><span class="p">())</span></code></pre>
+</div>
 <p>Run a case, and when the graph pauses for a person, resume it with their decision:</p>
-<pre class="lang-python"><code class="language-python">config = {"configurable": {"thread_id": "vendor-A-104"}}
-out = await graph.ainvoke({"tree_id": TREE_ID, "subject": subject}, config)
-# out["__interrupt__"] carries the question and the proposed answer
-out = await graph.ainvoke(
-    Command(resume={"option": "Yes", "provenance_id": "reviewer:jlee/kyc-file-3"}),
-    config,
-)
-print(out["report"]["result_kind"])
-</code></pre>
+<div class="code-frame">
+  <div class="code-label">Python · Resume after review</div>
+  <pre class="lang-python"><code class="language-python"><span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;configurable&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;thread_id&quot;</span><span class="p">:</span> <span class="s2">&quot;vendor-A-104&quot;</span><span class="p">}}</span>
+<span class="n">out</span> <span class="o">=</span> <span class="k">await</span> <span class="n">graph</span><span class="o">.</span><span class="n">ainvoke</span><span class="p">({</span><span class="s2">&quot;tree_id&quot;</span><span class="p">:</span> <span class="n">TREE_ID</span><span class="p">,</span> <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="n">subject</span><span class="p">},</span> <span class="n">config</span><span class="p">)</span>
+<span class="c1"># out[&quot;__interrupt__&quot;] carries the question and the proposed answer</span>
+<span class="n">out</span> <span class="o">=</span> <span class="k">await</span> <span class="n">graph</span><span class="o">.</span><span class="n">ainvoke</span><span class="p">(</span>
+    <span class="n">Command</span><span class="p">(</span><span class="n">resume</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;option&quot;</span><span class="p">:</span> <span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;provenance_id&quot;</span><span class="p">:</span> <span class="s2">&quot;reviewer:jlee/kyc-file-3&quot;</span><span class="p">}),</span>
+    <span class="n">config</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s2">&quot;report&quot;</span><span class="p">][</span><span class="s2">&quot;result_kind&quot;</span><span class="p">])</span></code></pre>
+</div>
 <p>Notice what <em>isn't</em> in this code. There are no branch conditions, no thresholds that combine answers into a conclusion, and nothing that encodes the approval policy. The routing table says who gathers evidence and who answers. Jev may answer first, or independently re-answer from an agent's bundle so the harness can check the agent's choice. The admission table says how much confidence a question needs before an answer is admitted without a person, and a disagreement between Jev and the agent always interrupts, following TypeSafe's <a href="https://docs.typesafe.ai/patterns/confidence-routing" rel="noopener noreferrer" target="_blank">Confidence-Gated Routing</a> pattern. What follows from the answers lives in the deployed theory the expert authorized. The answerer component is shown the question and its options, but never the branching logic or possible conclusions.</p>
 <h2 id="confidence-meets-commitment">Confidence meets commitment</h2>
 <p>Jev's most useful property here isn't speed. It's an explicit confidence signal the host can act on at the commitment boundary.</p>
