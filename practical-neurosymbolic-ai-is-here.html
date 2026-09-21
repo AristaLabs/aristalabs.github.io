@@ -370,6 +370,34 @@
   .post-body .table-wrap { overflow-x: auto; margin: 0 0 1.4em; }
   .post-body .table-wrap table { margin: 0; }
 
+  .post-body .adapter-table {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.82);
+  }
+
+  .post-body .adapter-table table {
+    min-width: 660px;
+  }
+
+  .post-body .adapter-table th {
+    background: rgba(30, 41, 59, 0.55);
+  }
+
+  .post-body .adapter-table th:first-child,
+  .post-body .adapter-table td:first-child {
+    width: 25%;
+  }
+
+  .post-body .adapter-table th:last-child,
+  .post-body .adapter-table td:last-child {
+    width: 31%;
+  }
+
+  .post-body .adapter-table tr:last-child td {
+    border-bottom: 0;
+  }
+
   .diagram {
     margin: 28px 0 36px;
     padding: 16px 8px;
@@ -497,20 +525,20 @@
 <p><strong>Jev</strong> takes state and typed questions and returns typed answers with probabilities. Choice picks from a set of options and returns per-option probabilities plus a confidence score. Score rates against ordered levels. Noul answers yes or no as a probability. Every question in a request is answered in one parallel pass, and TypeSafe <a href="https://docs.typesafe.ai/concepts/how-to-build-with-system-one" rel="noopener noreferrer" target="_blank">says</a> most queries complete in about 100 milliseconds.</p>
 <p><strong>SMEme</strong> takes a decision tree an expert writes in natural language, made of questions with finite allowed answers, branching conditions, and conclusions. When the expert Deploys it, SMEme compiles it into a frozen intermediate representation (IR). Every evaluation encodes that IR into a propositional theory for the solver. At runtime, SMEme's <code>Inquire</code> loop takes the evidence admitted so far and returns the next unanswered question that can still change the outcome, as a blind task with an id, a stem, and the allowed options. Once the case resolves, it returns a report instead.</p>
 <p>When put side by side, the Jev + SMEme integration nearly writes itself:</p>
-<figure class="diagram-frame">
-  <figcaption>Adapter boundary</figcaption>
-  <pre class="lang-text"><code class="language-text">SMEme task                     Jev question
-──────────                     ────────────
-stem (question)       →        Choice.instructions
-options               →        Choice.criteria (+ adapter-only "none fit")
-
-Jev answer                     Harness                                SMEme continue
-──────────                     ───────                                ──────────────
-choice        →  mapped back to the exact option                 →    selected_option
-confidence    →  admission policy (never sent)
-                 evidence fingerprint                            →    provenance_id
-</code></pre>
-</figure>
+<div class="table-wrap adapter-table">
+  <table>
+    <thead>
+      <tr><th>Source</th><th>Adapter behavior</th><th>Destination</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>SMEme <code>stem</code></td><td>Pass through</td><td>Jev <code>Choice.instructions</code></td></tr>
+      <tr><td>SMEme <code>options</code></td><td>Key and add adapter-only <code>none fit</code></td><td>Jev <code>Choice.criteria</code></td></tr>
+      <tr><td>Jev <code>choice</code></td><td>Map back to the exact authorized option</td><td>SMEme <code>selected_option</code></td></tr>
+      <tr><td>Jev <code>confidence</code></td><td>Apply the harness admission policy</td><td>Not sent to SMEme</td></tr>
+      <tr><td>Evidence snapshot</td><td>Compute an evidence fingerprint</td><td>SMEme <code>provenance_id</code></td></tr>
+    </tbody>
+  </table>
+</div>
 <p>That's the whole adapter. SMEme already emits the kind of object Jev was built to consume.</p>
 <p>This works because SMEme's questions aren't prompts. <strong>They are the vocabulary of the decision procedure.</strong> Each question and its allowed answers define propositions the theory reasons over. Jev, an LLM, or a person can determine which authorized answer best fits the evidence. Jev can't invent a new answer by design, since it only returns one of the options it's handed. SMEme is what makes those options the ones the expert authorized, and it rejects anything else, whoever proposed it. None of them decides what admitting that answer entails under the procedure.</p>
 <p>To Jev, the question is the prompt and the state is the context. Its weights induce a distribution over the authorized answers, and the judgment is which answer best fits the case. That is bounded classification, not open-ended generation. In the architecture post I left all of that to an LLM. Now a dedicated component can take the state an LLM assembled and return structured answers over a natural-language vocabulary the expert authorized. Once admitted, those answers are the native inputs to SMEme's System 2 reasoning. <strong>Practical neurosymbolic AI is here.</strong></p>
